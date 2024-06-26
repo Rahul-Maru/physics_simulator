@@ -3,7 +3,6 @@ import numpy as np
 from matplotlib import pyplot as plt
 import math
 from math import pi, e, sqrt, sin, cos, tan
-import pygame
 
 k = 0.5
 m = 1
@@ -15,16 +14,6 @@ tf = 15
 
 
 def main():
-	pygame.init()  
-	screen = pygame.display.set_mode((500,500))  
-	done = False  
-
-	while not done:  
-		for event in pygame.event.get():  
-			if event.type == pygame.QUIT:  
-				done = True  
-		pygame.display.flip()  
-
 	s0 = 1
 	u = 0
 
@@ -74,7 +63,7 @@ def main():
 	plt.plot(tlist, sdiff, linestyle="dotted",  color="blue")
 	# plt.plot(tlist, vdiff, linestyle="dotted",  color="orange")
 	plt.legend(["0", "rest position", "s", "v", "s(exact)", "error - s"])
-	plt.xlabel("t")
+	plt.xlabel("t/s")
 	plt.show()
 
 
