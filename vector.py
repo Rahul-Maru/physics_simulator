@@ -8,7 +8,7 @@ class Vector:
 			self.comps = []
 			return
 		elif len(args) == 1:
-			if isinstance(args[0], list):
+			if isinstance(args[0], list) or isinstance(args[0], tuple):
 				args = args[0]
 			elif isinstance(args[0], Vector):
 				self.comps = args[0].comps.copy()
@@ -16,20 +16,27 @@ class Vector:
 
 		for arg in args:
 			if not isinstance(arg, Number):
-				raise TypeError
+				raise TypeError("Type Mismatch Error: Invalid type for Vector coordinates")
 
 
 		self.comps = list(args)
 
+	def x(self) -> Number:
+		if len(self) >= 1:
+			return self.comps[0]
+		return 0
 
+	def y(self) -> Number:
+		if len(self) >= 2:
+			return self.comps[1]
+		return 0
 
-	def append(self, i: Number) -> None:
-		self.comps.append(i)
+	def z(self) -> Number:
+		if len(self) >= 3:
+			return self.comps[2]
+		return 0
 
-	def set(self, i: Number, index: int) -> None:
-		self.comps[index] = i
-
-	def magnitude(self) -> Number:
+	def mag(self) -> Number:
 		if len(self.comps) == 0:
 			return 0
 
@@ -43,8 +50,22 @@ class Vector:
 		if len(self.comps) == 0:
 			return Vector()
 		
-		return self/self.magnitude()
+		return self/self.mag()
+
+	def dot(self, o: Vector) -> Number:
+		if len(self.comps) == 0:
+			return 0
+
+		sum = 0
+		for a, b in zip(self.comps, o.comps):
+			sum += a*b
+
+		return sum
 	
+	def cross(self, o: Vector) -> Vector:
+		return Vector(self.y()*o.z() - self.z() * o.y(), self.z()*o.x() - self.x()*o.z(), self.x()*o.y() - self.y()*o.x())
+
+
 	def __eq__(self, o: Vector) -> bool:
 		if isinstance(o, Vector):
 			if len(self) == len(o):
@@ -58,10 +79,10 @@ class Vector:
 	
 	def __str__(self) -> str:
 		if len(self.comps) == 0:
-			return "()"
-		vectstr = "("
+			return "<>"
+		vectstr = "<"
 		for comp in self.comps: vectstr += f"{comp}, "
-		return vectstr[:-2] + ")"
+		return vectstr[:-2] + ">"
 	
 	def __add__(self, o: Vector) -> Vector:
 		if len(self.comps) != len(o.comps):
@@ -69,14 +90,20 @@ class Vector:
 		
 		result = Vector()
 		for comp, ocomp in zip(self.comps, o.comps):
-			result.append(comp + ocomp)
+			result.comps.append(comp + ocomp)
 
 		return result
 	
 	def __mul__(self, k: Number):
 		result = Vector()
 		for comp in self.comps:
-			result.append(k*comp)
+			result.comps.append(k*comp)
+		return result
+
+	def __rmul__(self, k: Number):
+		result = Vector()
+		for comp in self.comps:
+			result.comps.append(k*comp)
 		return result
 	
 	def __truediv__(self, k: Number):
@@ -85,13 +112,9 @@ class Vector:
 	def	__neg__(self):
 		result = Vector()
 		for comp in self.comps:
-			result.append(-comp)
+			result.comps.append(-comp)
 		return result
 		
 	def __sub__(self, o: Vector):
 		return self + -o
-	
-	def __rsub__(self, o: Vector):
-		return -self + o
-	
 	
