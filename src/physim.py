@@ -15,7 +15,7 @@ FPS = 41 # frames/s
 
 clock = pg.time.Clock()
 
-spring = pg.image.load("spring.png") # source: khanacademy
+spring = pg.image.load("imgs/spring.png") # source: khanacademy
 
 g = -9.8 # m/s^2  gravitational constant
 k = 8 # N/m  spring constant
