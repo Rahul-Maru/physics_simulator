@@ -5,9 +5,11 @@ from vector import Vector
 from particle import Particle
 from spring import Spring
 
+done = False
+pause = False
+
 def main():
 	pg.init()
-	done = False
 
 	t = log_t = 0
 
@@ -26,29 +28,36 @@ def main():
 
 	# simulator loop
 	while not done:
+		handle_events()
+
 		dt = clock.tick_busy_loop(FPS)/1000  # s
-		t += dt # s
+		if not pause:
+			t += dt # s
 
-		F_net = F(p.s, p.v) # N
-		U = p.move(F_net, dt, E) # J
+			F_net = F(p.s, p.v) # N
+			U = p.move(F_net, dt, E) # J
 
-		spg.s = p.s
+			spg.s = p.s
 
-		if t > log_t + 1:
-			log_t += 1
-			print(f"{log_t} ||| {p.s} || {p.v} \n {F_net/m} || {U}")
-
-
-		done = handle_events()
+			if t > log_t + 1:
+				log_t += 1
+				print(f"{log_t} ||| {p.s} || {p.v} \n {F_net/m} || {U}")
 
 		draw(screen, [spg, p], t)
 
 
 def handle_events():
+	global done
+	global pause
+
 	for event in pg.event.get():
 			if event.type == pg.QUIT:
-				return True
-	return False
+				done = True
+			elif event.type == pg.KEYDOWN:
+				if event.key == pg.K_ESCAPE:
+					done = True
+				if event.key == pg.K_SPACE:
+					pause = not pause
 
 def draw(screen, objs, t):
 	screen.fill((0, 0, 0))
@@ -56,15 +65,19 @@ def draw(screen, objs, t):
 	for obj in objs:
 		obj.draw(screen)
 
-
 	fps = clock.get_fps()
-	font = pg.font.SysFont(None, 14)
-	fpstxt = font.render(f"{round(fps, 0)} FPS", True, (0, 255, 0) if fps >= FPS else (255, 0, 0))
-	ttxt = font.render(f"t = {t:.1f}s", True, (164, 0, 255))
 
-	screen.blit(fpstxt, (24, 20))
+	font = pg.font.SysFont(None, 14)
+
+	ttxt = font.render(f"t = {t:.1f}s", True, (164, 0, 255))
 	screen.blit(ttxt, (WINDOW_WIDTH - ttxt.get_width() - 24, 20))
 
+	if pause:
+		pausetxt = font.render("PAUSED", True, (255, 24, 0))
+		screen.blit(pausetxt, (24, 20))
+	else:
+		fpstxt = font.render(f"{round(fps, 0)} FPS", True, (0, 255, 0) if fps >= FPS else (255, 0, 0))
+		screen.blit(fpstxt, (24, 20))
 
 	pg.display.flip()
 
