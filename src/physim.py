@@ -6,21 +6,21 @@ from particle import Particle
 # from spring import Spring
 
 done = False
-pause = False
+paused = False
 
 def main():
 	pg.init()
 
-	t = secs = 0
+	t = 0 # Hday (hecto day)
+	secs = -1 # IRL s (real life seconds)
 
-	earth = Particle(m_e, 0, s0_e, u, 0.15, 0.15, (0, 200, 128), "img/earth.png")
-	SUN = Particle(m_s, 0, s_s, 0, 0.845, 0.845, (255, 128, 0), "img/sun.png", flags="i")
+	SUN = Particle(m_s, 0, s_s, 0, SIZE_S, (255, 128, 0), "img/sun.png", flags="i")
+	earth = Particle(m_e, 0, s0_e, u, SIZE_E, (0, 200, 128), "img/earth.png")
 
 	# function energy
-	E = lambda p1, p2: -G*m_e*m_s/(p1.s-p2.s).mag() + p1.m*p1.v.mag()**2/2 # J
-	# TODO angular momentum
+	E = lambda p1, p2: -G*m_e*m_s/(p1.s-p2.s).mag() + p1.m*p1.v.mag()**2/2 # kg·AU²/Hday²
 
-	a0 = (Fg(earth, SUN))/m_e # m/s²
+	a0 = (Fg(earth, SUN))/m_e # AU/Hday²
 
 	# v(dt/2) | setup for the leap-frog integration method
 	earth.v += a0/(2*FPS)
@@ -30,18 +30,18 @@ def main():
 	while not done:
 		handle_events()
 
-		dt = clock.tick_busy_loop(FPS)/1000  # s
-		if not pause:
-			t += dt # s
+		dt = clock.tick_busy_loop(FPS)/1000  # IRL s
+		if not paused:
+			t += dt
 
-			F_net = Fg(earth, SUN) # N
-			U = earth.move(F_net, dt, E, SUN) # J
-			L = earth.m*earth.v*(earth.s-SUN.s).mag() # kg·m²/s
+			F_net = Fg(earth, SUN)
+			U = earth.move(F_net, dt, E, SUN)
+			L = earth.m*earth.v*(earth.s-SUN.s).mag() # kg·AU²/Hday
 
-			# log data every second
+			# logs data
 			if t > secs + 1:
 				secs += 1
-				print(f"{secs} ||| {earth.s} || {earth.v} \n {F_net/m_e} || {U} || {L.mag()}")
+				print(f"t {secs*100:.1f} ||| s {earth.s} || v {earth.v} \n a {F_net/m_e} || U {U} || L {L.mag()}")
 
 		draw(screen, [SUN, earth], t)
 
@@ -57,10 +57,10 @@ def draw(screen: pg.Surface, objs, t):
 
 	font = pg.font.SysFont(None, 14)
 
-	ttxt = font.render(f"t = {t:.1f}s", True, (164, 0, 255))
+	ttxt = font.render(f"t = {t*100:.1f} days", True, (164, 0, 255))
 	screen.blit(ttxt, (WINDOW_WIDTH - ttxt.get_width() - 24, 20))
 
-	if pause:
+	if paused:
 		pausetxt = font.render("PAUSED", True, (255, 24, 0))
 		screen.blit(pausetxt, (24, 20))
 	else:
@@ -71,7 +71,7 @@ def draw(screen: pg.Surface, objs, t):
 
 def handle_events():
 	global done
-	global pause
+	global paused
 
 	for event in pg.event.get():
 			if event.type == pg.QUIT:

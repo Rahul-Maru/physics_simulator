@@ -5,12 +5,11 @@ from consts import pg, SCALE
 import math
 
 class Particle:
-	def __init__(self, m: Number, q: Number, s, u, l=0.4, w=0.4,
+	def __init__(self, m: Number, q: Number, s, u, size=(0.4, 0.4),
 			  color: tuple = (128, 255, 0), img_src: str = "", flags: str = "",) -> None:
 		self.m = m # kg  mass
 		self.q = q # C  charge
-		self.l = l # m  length
-		self.w = w # m  width
+		self.w, self.h = size[0], size[1]
 		self.color = color
 
 		if isinstance(s, Vector):
@@ -50,9 +49,9 @@ class Particle:
 	
 	def draw(self, screen: pg.Surface) -> None:
 		if hasattr(self, "img"):
-			screen.blit(pg.transform.scale(self.img, (self.l*SCALE, self.w*SCALE)), ((self.s.x() - self.l/2)*SCALE, (-self.s.y() - self.w/2)*SCALE))
+			screen.blit(pg.transform.scale(self.img, (self.w*SCALE, self.h*SCALE)), ((self.s.x() - self.w/2)*SCALE, (-self.s.y() - self.h/2)*SCALE))
 		else:
-			pg.draw.rect(screen, self.color, pg.Rect((self.s.x() - self.l/2)*SCALE, (-self.s.y() - self.w/2)*SCALE, self.l*SCALE, self.w*SCALE))
+			pg.draw.rect(screen, self.color, pg.Rect((self.s.x() - self.w/2)*SCALE, (-self.s.y() - self.h/2)*SCALE, self.w*SCALE, self.h*SCALE))
 
 
 	def __str__(self) -> str:
