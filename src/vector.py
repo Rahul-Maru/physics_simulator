@@ -46,7 +46,7 @@ class Vector:
 		
 		return math.sqrt(sum2)
 
-	def unitvector(self) -> Vector:
+	def unit(self) -> Vector:
 		if len(self.comps) == 0:
 			return Vector()
 		

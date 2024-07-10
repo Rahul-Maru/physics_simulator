@@ -3,7 +3,7 @@ from consts import *
 from math import pi, e, sqrt, sin, cos, tan
 from vector import Vector
 from particle import Particle
-from spring import Spring
+# from spring import Spring
 
 done = False
 pause = False
@@ -11,20 +11,21 @@ pause = False
 def main():
 	pg.init()
 
-	t = log_t = 0
+	t = secs = 0
 
-	spg = Spring(k, Vector(s0.x(), 0), sr, WIDTH)
+	earth = Particle(m_e, 0, s0_e, u, 0.1, 0.1, (0, 200, 128))
+	SUN = Particle(m_s, 0, s_s, 0, 0.7, 0.7, (255, 128, 0), flags="i")
 
-	# functions for net force and energy
-	F = lambda s, v : spg.F(s) + Fg() + Fd(v) # N
-	E = lambda s, v: -m*g*s.y() + m*v.mag()**2/2 + spg.energy(s) # J
+	# function energy
+	E = lambda p1, p2: -G*m_e*m_s/(p1.s-p2.s).mag() + p1.m*p1.v.mag()**2/2 # J
+	# TODO angular momentum
 
-	a0 = (F(s0, u))/m # m/s²
+	a0 = (Fg(earth, SUN))/m_e # m/s²
 
 	# v(dt/2) | setup for the leap-frog integration method
-	v05 = u + a0/(2*FPS) # m/s
 
-	p = Particle(m, 0, s0 + v05/FPS, v05, WIDTH/SCALE, 1/11)
+	earth.v += a0/(2*FPS)
+	earth.s += earth.v/FPS
 
 	# simulator loop
 	while not done:
@@ -34,30 +35,16 @@ def main():
 		if not pause:
 			t += dt # s
 
-			F_net = F(p.s, p.v) # N
-			U = p.move(F_net, dt, E) # J
+			F_net = Fg(earth, SUN) # N
+			U = earth.move(F_net, dt, E, SUN) # J
 
-			spg.s = p.s
+			# log data every second
+			if t > secs + 1:
+				secs += 1
+				print(f"{secs} ||| {earth.s} || {earth.v} \n {F_net/m_e} || {U}")
 
-			if t > log_t + 1:
-				log_t += 1
-				print(f"{log_t} ||| {p.s} || {p.v} \n {F_net/m} || {U}")
+		draw(screen, [SUN, earth], t)
 
-		draw(screen, [spg, p], t)
-
-
-def handle_events():
-	global done
-	global pause
-
-	for event in pg.event.get():
-			if event.type == pg.QUIT:
-				done = True
-			elif event.type == pg.KEYDOWN:
-				if event.key == pg.K_ESCAPE:
-					done = True
-				if event.key == pg.K_SPACE:
-					pause = not pause
 
 def draw(screen, objs, t):
 	screen.fill((0, 0, 0))
@@ -80,6 +67,19 @@ def draw(screen, objs, t):
 		screen.blit(fpstxt, (24, 20))
 
 	pg.display.flip()
+
+def handle_events():
+	global done
+	global pause
+
+	for event in pg.event.get():
+			if event.type == pg.QUIT:
+				done = True
+			elif event.type == pg.KEYDOWN:
+				if event.key == pg.K_ESCAPE:
+					done = True
+				if event.key == pg.K_SPACE:
+					pause = not pause
 
 
 if __name__ == "__main__":

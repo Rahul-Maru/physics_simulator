@@ -11,22 +11,18 @@ clock = pg.time.Clock()
 screen = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
 # universal properties
-g = -9.8 # m/s²  gravitational constant
-b = 0 # Ns/m  damping constant
+G = 6.6743e-11 #  m³/kg·s²
 
-Fg = lambda : Vector(0, g*m) # N  force of gravity
-Fd = lambda v : -v*b # N  damping force
+Fg = lambda p1, p2: G*p1.m*p2.m/(p1.s-p2.s).mag()**2 * (p2.s-p1.s).unit() # N  force of gravity
 
-# spring properties
-WIDTH = SCALE # m  width of spring
-MID = (WINDOW_WIDTH-WIDTH)/(2*SCALE) # m  midpoint of spring
-k = 8 # N/m  spring constant
-sr = Vector(MID, -2) # m  rest point of spring
+# sun properties
+m_s = 4.2e10 # kg  mass of sun
+s_s = Vector(2.5, -2.5) # m  sun position
 
-# particle properties
-m = 0.6 # kg  mass of particle
+# earth properties
+m_e = 10 # kg  mass of earth
 
 # initial conditions
-s0 = Vector(MID, -1) # m  initial position
-u = Vector(0, 0) # m/s  initial velocity
+s0_e = Vector(0.5, -2) # m  initial position
+u = Vector(0, 1) # m/s  initial velocity
 
