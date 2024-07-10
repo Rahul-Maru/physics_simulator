@@ -13,8 +13,8 @@ def main():
 
 	t = secs = 0
 
-	earth = Particle(m_e, 0, s0_e, u, 0.1, 0.1, (0, 200, 128))
-	SUN = Particle(m_s, 0, s_s, 0, 0.7, 0.7, (255, 128, 0), flags="i")
+	earth = Particle(m_e, 0, s0_e, u, 0.15, 0.15, (0, 200, 128), "img/earth.png")
+	SUN = Particle(m_s, 0, s_s, 0, 0.845, 0.845, (255, 128, 0), "img/sun.png", flags="i")
 
 	# function energy
 	E = lambda p1, p2: -G*m_e*m_s/(p1.s-p2.s).mag() + p1.m*p1.v.mag()**2/2 # J
@@ -23,7 +23,6 @@ def main():
 	a0 = (Fg(earth, SUN))/m_e # m/s²
 
 	# v(dt/2) | setup for the leap-frog integration method
-
 	earth.v += a0/(2*FPS)
 	earth.s += earth.v/FPS
 
@@ -46,8 +45,9 @@ def main():
 		draw(screen, [SUN, earth], t)
 
 
-def draw(screen, objs, t):
+def draw(screen: pg.Surface, objs, t):
 	screen.fill((0, 0, 0))
+	screen.blit(pg.transform.scale(bg, (WINDOW_WIDTH, WINDOW_HEIGHT)), (0, 0))
 
 	for obj in objs:
 		obj.draw(screen)

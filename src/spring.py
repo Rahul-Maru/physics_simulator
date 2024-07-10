@@ -5,7 +5,7 @@ from vector import Vector
 
 class Spring:
 	def __init__(self, k: Number, base_pos: Vector, sr: Vector, width: Number = WIDTH, img_src: str = "img/spring.png") -> None:
-		self.img = pg.image.load(img_src) # source: khanacademy
+		self.img = pg.image.load(img_src)
 
 		self.k = k # spring constant
 
