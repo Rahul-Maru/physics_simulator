@@ -36,11 +36,12 @@ def main():
 
 			F_net = Fg(earth, SUN) # N
 			U = earth.move(F_net, dt, E, SUN) # J
+			L = earth.m*earth.v*(earth.s-SUN.s).mag() # kg·m²/s
 
 			# log data every second
 			if t > secs + 1:
 				secs += 1
-				print(f"{secs} ||| {earth.s} || {earth.v} \n {F_net/m_e} || {U}")
+				print(f"{secs} ||| {earth.s} || {earth.v} \n {F_net/m_e} || {U} || {L.mag()}")
 
 		draw(screen, [SUN, earth], t)
 
