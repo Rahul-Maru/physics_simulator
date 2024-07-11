@@ -1,9 +1,7 @@
 from consts import *
 
 from math import pi, e, sqrt, sin, cos, tan
-from vector import Vector
 from particle import Particle
-# from spring import Spring
 
 done = False
 paused = False
@@ -50,6 +48,10 @@ def draw(screen: pg.Surface, objs, t):
 	screen.fill((0, 0, 0))
 	screen.blit(pg.transform.scale(bg, (WINDOW_WIDTH, WINDOW_HEIGHT)), (0, 0))
 
+	pg.draw.circle(screen, GRAY, (250,250), L_SCALE, 2)
+	pg.draw.line(screen, GRAY, (0, 250), (500, 250))
+	pg.draw.line(screen, GRAY, (250, 0), (250, 500))
+
 	for obj in objs:
 		obj.draw(screen)
 
@@ -80,7 +82,7 @@ def handle_events():
 				if event.key == pg.K_ESCAPE:
 					done = True
 				if event.key == pg.K_SPACE:
-					pause = not pause
+					paused = not paused
 
 
 if __name__ == "__main__":

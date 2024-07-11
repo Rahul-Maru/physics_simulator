@@ -1,7 +1,7 @@
 from __future__ import annotations
 from numbers import Number
 from vector import Vector
-from consts import pg, SCALE
+from consts import pg, L_SCALE
 import math
 
 class Particle:
@@ -49,9 +49,9 @@ class Particle:
 	
 	def draw(self, screen: pg.Surface) -> None:
 		if hasattr(self, "img"):
-			screen.blit(pg.transform.scale(self.img, (self.w*SCALE, self.h*SCALE)), ((self.s.x() - self.w/2)*SCALE, (-self.s.y() - self.h/2)*SCALE))
+			screen.blit(pg.transform.scale(self.img, (self.w*L_SCALE, self.h*L_SCALE)), ((self.s.x() - self.w/2)*L_SCALE, (-self.s.y() - self.h/2)*L_SCALE))
 		else:
-			pg.draw.rect(screen, self.color, pg.Rect((self.s.x() - self.w/2)*SCALE, (-self.s.y() - self.h/2)*SCALE, self.w*SCALE, self.h*SCALE))
+			pg.draw.rect(screen, self.color, pg.Rect((self.s.x() - self.w/2)*L_SCALE, (-self.s.y() - self.h/2)*L_SCALE, self.w*L_SCALE, self.h*L_SCALE))
 
 
 	def __str__(self) -> str:

@@ -1,5 +1,5 @@
 from numbers import Number
-from consts import pg, SCALE, WIDTH, s0
+from consts import pg, L_SCALE, WIDTH, s0
 
 from vector import Vector
 
@@ -23,10 +23,10 @@ class Spring:
 	
 	def draw(self, screen: pg.Surface) -> None:
 		# spring image
-		screen.blit(pg.transform.scale(self.img, (SCALE, max(-self.s.comps[1], 0)*SCALE)), tuple((self.fixed_pos*SCALE).comps))
+		screen.blit(pg.transform.scale(self.img, (L_SCALE, max(-self.s.comps[1], 0)*L_SCALE)), tuple((self.fixed_pos*L_SCALE).comps))
 		
 		# equillibrium line
-		pg.draw.line(screen, (200, 200, 200), (1.5*SCALE, -self.sr.y()*SCALE), (3.5*SCALE, - self.sr.y()*SCALE))
+		pg.draw.line(screen, (200, 200, 200), (1.5*L_SCALE, -self.sr.y()*L_SCALE), (3.5*L_SCALE, - self.sr.y()*L_SCALE))
 
 
 
