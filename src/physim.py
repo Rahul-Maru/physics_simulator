@@ -1,6 +1,4 @@
 from consts import *
-
-from math import pi, e, sqrt, sin, cos, tan
 from particle import Particle
 
 done = False
@@ -9,16 +7,16 @@ paused = False
 def main():
 	pg.init()
 
-	t = 0 # Hday (hecto day)
+	t = 0 # IRL s
 	secs = -1 # IRL s (real life seconds)
 
-	SUN = Particle(m_s, 0, s_s, 0, SIZE_S, (255, 128, 0), "img/sun.png", flags="i")
-	earth = Particle(m_e, 0, s0_e, u, SIZE_E, (0, 200, 128), "img/earth.png")
+	SUN = Particle(m_s, 0, s_s, 0, SIZE_S, img_src="img/sun.png", flags="i")
+	earth = Particle(m_e, 0, s0_e, u, SIZE_E, img_src="img/earth.png")
 
 	# function energy
-	E = lambda p1, p2: -G*m_e*m_s/(p1.s-p2.s).mag() + p1.m*p1.v.mag()**2/2 # kg·AU²/Hday²
+	E = lambda p1, p2: -G*m_e*m_s/(p1.s-p2.s).mag() + p1.m*p1.v.mag()**2/2 # [M][L]²[T]¯²
 
-	a0 = (Fg(earth, SUN))/m_e # AU/Hday²
+	a0 = (Fg(earth, SUN))/m_e # [L][T]¯²
 
 	# v(dt/2) | setup for the leap-frog integration method
 	earth.v += a0/(2*FPS)
@@ -34,38 +32,40 @@ def main():
 
 			F_net = Fg(earth, SUN)
 			U = earth.move(F_net, dt, E, SUN)
-			L = earth.m*earth.v*(earth.s-SUN.s).mag() # kg·AU²/Hday
+			L = earth.m*earth.v*(earth.s-SUN.s).mag() # [M][L]²[T]¯¹
 
 			# logs data
-			if t > secs + 1:
+			if t >= secs + 1:
 				secs += 1
-				print(f"t {secs*100:.1f} ||| s {earth.s} || v {earth.v} \n a {F_net/m_e} || U {U} || L {L.mag()}")
+				print(f"t {secs*T_SCALE/DAY:.0f} ||| s {earth.s} || v {earth.v} \n a {F_net/m_e} || U {U} || L {L.mag()}")
 
 		draw(screen, [SUN, earth], t)
 
 
 def draw(screen: pg.Surface, objs, t):
-	screen.fill((0, 0, 0))
 	screen.blit(pg.transform.scale(bg, (WINDOW_WIDTH, WINDOW_HEIGHT)), (0, 0))
 
-	pg.draw.circle(screen, GRAY, (250,250), L_SCALE, 2)
-	pg.draw.line(screen, GRAY, (0, 250), (500, 250))
-	pg.draw.line(screen, GRAY, (250, 0), (250, 500))
+	pg.draw.line(screen, D_GRAY, (0, WINDOW_HEIGHT/2), (WINDOW_WIDTH, WINDOW_HEIGHT/2)) # x-axis
+	pg.draw.line(screen, D_GRAY, (WINDOW_WIDTH/2, 0), (WINDOW_WIDTH/2, WINDOW_HEIGHT)) # y-axis
 
+	pg.draw.circle(screen, GRAY, (WINDOW_WIDTH/2, WINDOW_HEIGHT/2), RES, 2) # expected orbit
+
+	# render all objects
 	for obj in objs:
 		obj.draw(screen)
 
-	fps = clock.get_fps()
-
 	font = pg.font.SysFont(None, 14)
 
-	ttxt = font.render(f"t = {t*100:.1f} days", True, (164, 0, 255))
+	# display the current simulation time
+	ttxt = font.render(f"t = {t*T_SCALE/DAY:.1f} days", True, (164, 0, 255))
 	screen.blit(ttxt, (WINDOW_WIDTH - ttxt.get_width() - 24, 20))
 
 	if paused:
 		pausetxt = font.render("PAUSED", True, (255, 24, 0))
 		screen.blit(pausetxt, (24, 20))
 	else:
+		# display the current fps
+		fps = clock.get_fps()
 		fpstxt = font.render(f"{round(fps, 0)} FPS", True, (0, 255, 0) if fps >= FPS else (255, 0, 0))
 		screen.blit(fpstxt, (24, 20))
 
