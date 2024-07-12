@@ -10,7 +10,7 @@ def main():
 	t = 0 # IRL s
 	secs = -LOG_S # IRL s (real life seconds)
 
-	SUN = Particle(m_s, 0, s_s, 0, SIZE_S, img_src="img/sun.png", flags="i")
+	SUN = Particle(m_s, 0, s_s, 0, SIZE_S, img_src="img/sun.png")
 	earth = Particle(m_e, 0, s0_e, u, SIZE_E, img_src="img/earth.png")
 
 	# function energy
