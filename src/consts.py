@@ -13,13 +13,15 @@ L_SCALE = 149597870700 # m/unit length || 1 AU
 T_SCALE = 86400*50 # s/unit time || 30 Days
 M_SCALE = 1 # kg/unit mass || 1 kg
 
-clock = pg.time.Clock()
-screen = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-bg = pg.image.load("img/stars.png")
-
 # colors
-GRAY = (120, 100, 80)
+RED = (255, 24, 0)
+GREEN = (0, 255, 0)
+LIME = (128, 255, 0)
+MAGENTA = (164, 0, 255)
+
+D_YELLOW = (120, 100, 80)
 D_GRAY = (60, 60, 60)
+
 
 # universal properties
 G = 6.6743e-11*T_SCALE**2/L_SCALE**3 #  [M]¯¹[L]³[T]¯²
@@ -39,3 +41,8 @@ m_e = 5.97219e24 # [M]  mass of earth
 s0_e = Vector(s_s.x() - 1, s_s.y()) # [L]  initial position of earth
 u = Vector(0, 29722*T_SCALE/L_SCALE) # [L][T]¯1  inital velocity of earth
 
+
+# pygame setup
+clock = pg.time.Clock()
+screen = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+bg = pg.image.load("img/stars.png")

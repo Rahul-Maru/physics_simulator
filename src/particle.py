@@ -1,16 +1,15 @@
 from __future__ import annotations
 from numbers import Number
 from vector import Vector
-from consts import pg, RES
+from consts import pg, RES, LIME
 import math
 
 class Particle:
 	def __init__(self, m: Number, q: Number, s, u, size=(0.4, 0.4),
-			  color: tuple = (128, 255, 0), img_src: str = "", flags: str = "",) -> None:
+			  color: tuple = LIME, img_src: str = "", flags: str = "",) -> None:
 		self.m = m # [M]  mass
 		self.q = q # [T][I]  charge
-		self.w, self.h = size[0], size[1]
-		self.color = color
+		self.w, self.h = size[0], size[1] # width, height
 
 		if isinstance(s, Vector):
 			self.s = s # [L]
@@ -27,7 +26,12 @@ class Particle:
 			case "i": self.mobile = 0
 
 		if len(img_src) > 0:
+			self.has_img = True
 			self.img = pg.image.load(img_src)
+		else:
+			self.has_img = False
+			self.color = color
+
 	
 	def move(self, F: Vector, dt: Number, Ufn: function = None, o: Particle = None) -> None:
 		a = F/self.m # [L][T]¯²
@@ -47,7 +51,7 @@ class Particle:
 		return U # [M][L][T]¯²
 	
 	def draw(self, screen: pg.Surface) -> None:
-		if hasattr(self, "img"):
+		if self.has_img:
 			screen.blit(pg.transform.scale(self.img, (self.w*RES, self.h*RES)), ((self.s.x() - self.w/2)*RES, (-self.s.y() - self.h/2)*RES))
 		else:
 			pg.draw.rect(screen, self.color, pg.Rect((self.s.x() - self.w/2)*RES, (-self.s.y() - self.h/2)*RES, self.w*RES, self.h*RES))
