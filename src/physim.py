@@ -8,7 +8,7 @@ def main():
 	pg.init()
 
 	t = 0 # IRL s
-	secs = -1 # IRL s (real life seconds)
+	secs = -LOG_S # IRL s (real life seconds)
 
 	SUN = Particle(m_s, 0, s_s, 0, SIZE_S, img_src="img/sun.png", flags="i")
 	earth = Particle(m_e, 0, s0_e, u, SIZE_E, img_src="img/earth.png")
@@ -35,8 +35,8 @@ def main():
 			L = earth.m*earth.v*(earth.s-SUN.s).mag() # [M][L]²[T]¯¹
 
 			# logs data
-			if t >= secs + 1:
-				secs += 1
+			if t >= secs + LOG_S:
+				secs += LOG_S
 				print(f"t {secs*T_SCALE/DAY:.0f} ||| s {earth.s} || v {earth.v} \n a {F_net/m_e} || U {U} || L {L.mag()}")
 
 		draw(screen, [SUN, earth], t)
@@ -61,12 +61,12 @@ def draw(screen: pg.Surface, objs, t):
 	screen.blit(ttxt, (WINDOW_WIDTH - ttxt.get_width() - 24, 20))
 
 	if paused:
-		pausetxt = font.render("PAUSED", True, RED)
+		pausetxt = font.render("PAUSED II", True, RED)
 		screen.blit(pausetxt, (24, 20))
 	else:
 		# display the current fps
-		fps = clock.get_fps()
-		fpstxt = font.render(f"{round(fps, 0)} FPS", True, GREEN if fps >= FPS else RED)
+		current_fps = clock.get_fps()
+		fpstxt = font.render(f"{round(current_fps, 0)} FPS", True, GREEN if current_fps >= FPS else RED)
 		screen.blit(fpstxt, (24, 20))
 
 	pg.display.flip()
