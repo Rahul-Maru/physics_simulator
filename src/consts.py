@@ -36,6 +36,10 @@ G = 6.6743e-11*T_SCALE**2/L_SCALE**3 #  [M]¯¹[L]³[T]¯²
 Fg = lambda p1, p2: G*p1.m*p2.m/(p1.s-p2.s).mag()**2 * (p2.s-p1.s).unit() # [M][L]²[T]¯² force of gravity
 # TODO Fc (coulomb's law)
 
+# energy function TODO maybe split this into GPE KE etc?
+ENERGY = lambda p1, p2: -G*m_e*m_s/(p1.s-p2.s).mag() + p1.m*p1.v.mag()**2/2 # [M][L]²[T]¯²
+
+
 # sun properties
 SIZE_S = (0.56, 0.56)
 m_s = 1.9891e30 # [M]  mass of sun

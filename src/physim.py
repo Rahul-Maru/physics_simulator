@@ -18,9 +18,7 @@ def main():
 	earth = Particle(m_e, 0, s0_e, u_e, SIZE_E, img_src="img/earth.png", name="Earth")
 	p_list = [sun, earth]
 
-	# energy function
-	energy = lambda p1, p2: -G*m_e*m_s/(p1.s-p2.s).mag() + p1.m*p1.v.mag()**2/2 # [M][L]²[T]¯²
-
+	# FIXME implement leap-frog for all particles
 	a0 = (Fg(earth, sun))/m_e # [L][T]¯²
 
 	# v(dt/2) | setup for the leap-frog integration method
@@ -42,9 +40,9 @@ def main():
 				secs += LOG_S
 				log = True
 
-			for p1, p2 in permutations(p_list):
+			for p1, p2 in permutations(p_list, 2):
 				F_net = Fg(p1, p2)
-				U = p1.move(F_net, dt, energy, p2)
+				U = p1.move(F_net, dt, ENERGY, p2)
 				L = p1.m*p1.v*(p1.s-p2.s).mag() # [M][L]²[T]¯¹
 				if log:
 					print(f"{p1.name} <-- {p2.name}")
