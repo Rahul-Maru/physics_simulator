@@ -1,7 +1,7 @@
 from __future__ import annotations
 from numbers import Number
 from vector import Vector
-from consts import pg, RES, LIME
+from consts import *
 import math
 
 class Particle:
@@ -9,7 +9,7 @@ class Particle:
 			  color: tuple = LIME, img_src: str = "", flags: str = "", name: str = "Particle") -> None:
 		self.m = m # [M]  mass
 		self.q = q # [T][I]  charge
-		self.w, self.h = size[0], size[1] # width, height
+		self.size = Vector(size)*RES
 		self.name = name
 
 		if isinstance(s, Vector):
@@ -52,10 +52,13 @@ class Particle:
 		return U # [M][L][T]¯²
 	
 	def draw(self, screen: pg.Surface) -> None:
+		coords = tuple((RES_MAT@self.s - self.size*0.5).comps)
+		size = tuple((self.size).comps)
+
 		if self.has_img:
-			screen.blit(pg.transform.scale(self.img, (self.w*RES, self.h*RES)), ((self.s.x() - self.w/2)*RES, (-self.s.y() - self.h/2)*RES))
+			screen.blit(pg.transform.scale(self.img, size), coords)
 		else:
-			pg.draw.rect(screen, self.color, pg.Rect((self.s.x() - self.w/2)*RES, (-self.s.y() - self.h/2)*RES, self.w*RES, self.h*RES))
+			pg.draw.rect(screen, self.color, pg.Rect(*coords, *size))
 
 
 	def __str__(self) -> str:
