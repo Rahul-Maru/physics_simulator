@@ -1,9 +1,18 @@
 from __future__ import annotations
+from abc import ABC
 from numbers import Number
 import math
 
-class Vector:
+# Class of things that support matrix multiplication, Vector-likes
+class Vectoid(ABC): pass
+
+class Vector(Vectoid):
+
+	c = 0 # debugging purposes
+
 	def __init__(self, *args) -> None:
+		Vector.c += 1
+
 		if len(args) == 0:
 			self.comps = []
 			return
@@ -84,6 +93,12 @@ class Vector:
 		for comp in self.comps: vectstr += f"{comp}, "
 		return vectstr[:-2] + ">"
 	
+	def	__neg__(self) -> Vector:
+		result = Vector()
+		for comp in self.comps:
+			result.comps.append(-comp)
+		return result
+
 	def __add__(self, o: Vector) -> Vector:
 		if len(self.comps) != len(o.comps):
 			raise ArithmeticError("Vectors must be of same length to be added or subtracted")
@@ -94,27 +109,42 @@ class Vector:
 
 		return result
 	
-	def __mul__(self, k: Number):
+	def __iadd__(self, o: Vector) -> Vector:
+		if len(self.comps) != len(o.comps):
+			raise ArithmeticError("Vectors must be of same length to be added or subtracted")
+
+		for i, ocomp in enumerate(o.comps):
+			self.comps[i] += ocomp
+
+		return self
+
+	def __sub__(self, o: Vector) -> Vector:
+		return self + -o
+
+	def __isub__(self, o: Vector) -> Vector:
+		self += -o
+		return self
+
+	def __mul__(self, k: Number) -> Vector:
 		result = Vector()
 		for comp in self.comps:
 			result.comps.append(k*comp)
 		return result
 
-	def __rmul__(self, k: Number):
+	def __imul__(self, k: Number) -> Vector:
+		for i in range(len(self.comps)):
+			self.comps[i] *= k
+		return self
+
+	def __rmul__(self, k: Number) -> Vector:
 		result = Vector()
 		for comp in self.comps:
 			result.comps.append(k*comp)
 		return result
-	
-	def __truediv__(self, k: Number):
+
+	def __truediv__(self, k: Number) -> Vector:
 		return self*(1/k)
 
-	def	__neg__(self):
-		result = Vector()
-		for comp in self.comps:
-			result.comps.append(-comp)
-		return result
-		
-	def __sub__(self, o: Vector):
-		return self + -o
-	
+	def __itruediv__(self, k: Number) -> Vector:
+		self *= 1/k
+		return self
