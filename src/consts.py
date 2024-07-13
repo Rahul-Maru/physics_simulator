@@ -5,6 +5,7 @@ from vector import Vector
 WINDOW_WIDTH = 600 # pixels
 WINDOW_HEIGHT = 600 # pixels
 RES = 150 # pixel/unit length
+# RES_MAT = Matrix(Vector(RES, 0), Vector(0, -RES))
 FPS = 60 # frames/IRL s (In-Real-Life seconds)  maximum framerate of the simulation
 DAY = 86400 # s/day  unit to display time counter
 LOG_S = 1 # IRL s  how frequently to log the system state
@@ -31,15 +32,17 @@ Fg = lambda p1, p2: G*p1.m*p2.m/(p1.s-p2.s).mag()**2 * (p2.s-p1.s).unit() # [M][
 # sun properties
 SIZE_S = (0.56, 0.56)
 m_s = 1.9891e30 # [M]  mass of sun
-s_s = Vector(WINDOW_WIDTH/(2*RES), -WINDOW_HEIGHT/(2*RES)) # [L]  sun position
 
 # earth properties
 SIZE_E = (0.12, 0.12)
-m_e = 5.97219e24 # [M]  mass of earth
+m_e = 5.97219e29 # [M]  mass of earth
 
 # initial conditions
-s0_e = Vector(s_s.x() - 1, s_s.y()) # [L]  initial position of earth
-u = Vector(0, 29722*T_SCALE/L_SCALE) # [L][T]¯1  inital velocity of earth
+s0_s = Vector(WINDOW_WIDTH/(2*RES), -WINDOW_HEIGHT/(2*RES)) # [L]  sun position
+s0_e = Vector(s0_s.x() - 1, s0_s.y()) # [L]  initial position of earth
+
+u_e = Vector(0, 29722*T_SCALE/L_SCALE) # [L][T]¯1  inital velocity of earth
+u_s = Vector(0, 0) # [L][T]¯1  inital velocity of sun
 
 
 # pygame setup

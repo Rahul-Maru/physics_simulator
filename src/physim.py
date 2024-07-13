@@ -1,5 +1,6 @@
 from consts import *
 from particle import Particle
+from itertools import permutations
 
 done = False
 paused = False
@@ -9,14 +10,16 @@ def main():
 
 	t = 0 # IRL s
 	secs = -LOG_S # IRL s (real life seconds)
+	log = False
 
-	SUN = Particle(m_s, 0, s_s, 0, SIZE_S, img_src="img/sun.png")
-	earth = Particle(m_e, 0, s0_e, u, SIZE_E, img_src="img/earth.png")
+	sun = Particle(m_s, 0, s0_s, u_s, SIZE_S, img_src="img/sun.png", name="Sun")
+	earth = Particle(m_e, 0, s0_e, u_e, SIZE_E, img_src="img/earth.png", name="Earth")
+	p_list = [sun, earth]
 
-	# function energy
-	E = lambda p1, p2: -G*m_e*m_s/(p1.s-p2.s).mag() + p1.m*p1.v.mag()**2/2 # [M][L]²[T]¯²
+	# energy function
+	energy = lambda p1, p2: -G*m_e*m_s/(p1.s-p2.s).mag() + p1.m*p1.v.mag()**2/2 # [M][L]²[T]¯²
 
-	a0 = (Fg(earth, SUN))/m_e # [L][T]¯²
+	a0 = (Fg(earth, sun))/m_e # [L][T]¯²
 
 	# v(dt/2) | setup for the leap-frog integration method
 	earth.v += a0/(2*FPS)
@@ -30,16 +33,23 @@ def main():
 		if not paused:
 			t += dt
 
-			F_net = Fg(earth, SUN)
-			U = earth.move(F_net, dt, E, SUN)
-			L = earth.m*earth.v*(earth.s-SUN.s).mag() # [M][L]²[T]¯¹
-
 			# logs data
 			if t >= secs + LOG_S:
 				secs += LOG_S
-				print(f"t {secs*T_SCALE/DAY:.0f} ||| s {earth.s} || v {earth.v} \n a {F_net/m_e} || U {U} || L {L.mag()}")
+				log = True
 
-		draw(screen, [SUN, earth], t)
+			for p1, p2 in permutations(p_list):
+				F_net = Fg(p1, p2)
+				U = p1.move(F_net, dt, energy, p2)
+				L = p1.m*p1.v*(p1.s-p2.s).mag() # [M][L]²[T]¯¹
+				if log:
+					print(f"{p1.name} <-- {p2.name}")
+					print(f"{p1}")
+					print(f"a: {F_net/p1.m} || U: {U} || L: {L.mag()}")
+
+			log = False
+
+		draw(screen, p_list, t)
 
 
 def draw(screen: pg.Surface, objs, t):
