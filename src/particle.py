@@ -6,10 +6,11 @@ import math
 
 class Particle:
 	def __init__(self, m: Number, q: Number, s, u, size=(0.4, 0.4),
-			  color: tuple = LIME, img_src: str = "", flags: str = "",) -> None:
+			  color: tuple = LIME, img_src: str = "", flags: str = "", name: str = "Particle") -> None:
 		self.m = m # [M]  mass
 		self.q = q # [T][I]  charge
 		self.w, self.h = size[0], size[1] # width, height
+		self.name = name
 
 		if isinstance(s, Vector):
 			self.s = s # [L]
@@ -58,4 +59,4 @@ class Particle:
 
 
 	def __str__(self) -> str:
-		return f"m: {self.m} || q: {'+' if self.q > 0 else ''}{self.q} || s: {self.s} v: {self.v}"
+		return f"{self.name} |||  m: {self.m} || q: {'+' if self.q > 0 else ''}{self.q} || s: {self.s} || v: {self.v}"
