@@ -4,6 +4,8 @@ from itertools import permutations
 
 done = False
 paused = False
+center = Vector(0, 0)
+zoom = 1
 
 def main():
 	pg.init()
@@ -27,10 +29,12 @@ def main():
 
 	# simulator loop
 	while not done:
-		handle_events()
-
 		dt = clock.tick_busy_loop(FPS)/1000  # IRL s
-		if not paused:
+
+		handle_events(dt)
+
+		# if dt is too large, do not proceed
+		if not paused and dt < 0.1:
 			t += dt
 
 			# logs data
@@ -51,24 +55,34 @@ def main():
 
 		draw(screen, p_list, t)
 
+def draw(screen: pg.Surface, objs: list[Particle], t):
+	# BUG: zooming is centered at corner rather than middle
+	# TODO: tutorial text / render before loop
 
-def draw(screen: pg.Surface, objs, t):
 	screen.blit(pg.transform.scale(bg, (WINDOW_WIDTH, WINDOW_HEIGHT)), (0, 0))
 
-	pg.draw.line(screen, D_GRAY, (0, WINDOW_HEIGHT/2), (WINDOW_WIDTH, WINDOW_HEIGHT/2)) # x-axis
-	pg.draw.line(screen, D_GRAY, (WINDOW_WIDTH/2, 0), (WINDOW_WIDTH/2, WINDOW_HEIGHT)) # y-axis
-
-	pg.draw.circle(screen, D_YELLOW, (WINDOW_WIDTH/2, WINDOW_HEIGHT/2), RES, 2) # expected orbit
+	pg.draw.line(screen, D_GRAY, \
+			  (0, (MID.y() + center.y()*RES)*zoom), \
+			  (WINDOW_WIDTH, (MID.y() + center.y()*RES)*zoom)) # x-axis
+	pg.draw.line(screen, D_GRAY, \
+			  ((MID.x()  - center.x()*RES)*zoom, 0), \
+			  ((MID.y()  - center.x()*RES)*zoom, WINDOW_HEIGHT)) # y-axis
 
 	# render all objects
 	for obj in objs:
-		obj.draw(screen)
+		obj.draw(screen, center, zoom)
 
 	font = pg.font.SysFont(None, 14)
 
 	# display the current simulation time
-	ttxt = font.render(f"t = {t*T_SCALE/DAY:.1f} days", True, MAGENTA)
+	ttxt = font.render(f"t = {t*T_SCALE/DAY:.0f} days", True, MAGENTA)
 	screen.blit(ttxt, (WINDOW_WIDTH - ttxt.get_width() - 24, 20))
+
+	# display the current center of viewpoint and zoom
+	ctxt = font.render(f"{center:.2f}", True, ORANGE)
+	ztxt = font.render(f"Q {zoom:.2f} x", True, ORANGE)
+	screen.blit(ctxt, (WINDOW_WIDTH - ctxt.get_width() - 24, WINDOW_WIDTH - ctxt.get_height() - ztxt.get_height() - 20))
+	screen.blit(ztxt, (WINDOW_WIDTH - ztxt.get_width() - 24, WINDOW_WIDTH - ztxt.get_height() - 20))
 
 	if paused:
 		pausetxt = font.render("PAUSED II", True, RED)
@@ -81,18 +95,46 @@ def draw(screen: pg.Surface, objs, t):
 
 	pg.display.flip()
 
-def handle_events():
-	global done
-	global paused
+last_key = None
+key_time = 0
+
+def handle_events(dt):
+	global done, paused, center, zoom, last_key, key_time
+
+	if last_key:
+		key_time += dt
+		if key_time >= 0.5:
+			last_key = None
+			key_time = 0
 
 	for event in pg.event.get():
-			if event.type == pg.QUIT:
+		if event.type == pg.QUIT:
+			done = True
+		elif event.type == pg.KEYDOWN:
+			if event.key == pg.K_ESCAPE:
 				done = True
-			elif event.type == pg.KEYDOWN:
-				if event.key == pg.K_ESCAPE:
-					done = True
-				if event.key == pg.K_SPACE:
-					paused = not paused
+			elif event.key == pg.K_SPACE:
+				paused = not paused
+			elif event.key == pg.K_c:
+				center = Vector(0, 0)
+			elif ((event.key == pg.K_LCTRL or event.key == pg.K_RCTRL) and last_key == pg.K_0) \
+			  or ((last_key == pg.K_LCTRL or last_key == pg.K_RCTRL) and event.key == pg.K_0):
+				zoom = 1
+			elif event.key == pg.K_EQUALS or event.key == pg.K_PLUS:
+				zoom *= 1.1
+			elif event.key == pg.K_MINUS:
+				zoom *= 0.9090909091
+			else: last_key = event.key
+
+	keys = pg.key.get_pressed()
+	if keys[pg.K_UP]:
+		center += J*dt/zoom
+	if keys[pg.K_RIGHT]:
+		center += I*dt/zoom
+	if keys[pg.K_DOWN]:
+		center -= J*dt/zoom
+	if keys[pg.K_LEFT]:
+		center -= I*dt/zoom
 
 
 if __name__ == "__main__":

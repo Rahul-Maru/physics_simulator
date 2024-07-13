@@ -5,6 +5,7 @@ from matrix import Matrix
 # simulation properties
 WINDOW_WIDTH = 600 # pixels
 WINDOW_HEIGHT = 600 # pixels
+MID = Vector(WINDOW_WIDTH/2, WINDOW_HEIGHT/2)
 RES = 150 # pixel/unit length
 RES_MAT = Matrix(Vector(RES, 0), Vector(0, -RES))
 FPS = 60 # frames/IRL s (In-Real-Life seconds)  maximum framerate of the simulation
@@ -13,12 +14,17 @@ LOG_S = 1 # IRL s  how frequently to log the system state
 
 # colors
 RED = (255, 24, 0)
+ORANGE = (253, 184, 19)
 GREEN = (0, 255, 0)
 LIME = (128, 255, 0)
 MAGENTA = (164, 0, 255)
 
 D_YELLOW = (120, 100, 80)
 D_GRAY = (60, 60, 60)
+
+# unit vectors
+I = Vector(1, 0)
+J = Vector(0, 1)
 
 # unit scale factors
 L_SCALE = 149597870700 # m/unit length || 1 AU
@@ -39,7 +45,7 @@ SIZE_E = (0.12, 0.12)
 m_e = 5.97219e29 # [M]  mass of earth
 
 # initial conditions
-s0_s = Vector(WINDOW_WIDTH/(2*RES), -WINDOW_HEIGHT/(2*RES)) # [L]  sun position
+s0_s = Vector(0, 0) # [L]  sun position
 s0_e = Vector(s0_s.x() - 1, s0_s.y()) # [L]  initial position of earth
 
 u_e = Vector(0, 29722*T_SCALE/L_SCALE) # [L][T]¯1  inital velocity of earth

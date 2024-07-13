@@ -93,6 +93,13 @@ class Vector(Vectoid):
 		for comp in self.comps: vectstr += f"{comp}, "
 		return vectstr[:-2] + ">"
 	
+	def __format__(self, format_spec: str) -> str:
+		if len(self.comps) == 0:
+			return "<>"
+		vectstr = "<"
+		for comp in self.comps: vectstr += comp.__format__(format_spec) + ", "
+		return vectstr[:-2] + ">"
+
 	def	__neg__(self) -> Vector:
 		result = Vector()
 		for comp in self.comps:
