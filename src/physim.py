@@ -1,17 +1,22 @@
-from consts import *
-from particle import Particle
+from time import time
 from itertools import permutations
+
+from particle import Particle
+from consts import *
 
 done = False
 paused = False
 center = Vector(0, 0)
 zoom = 1
 
+# text = TextObject()
+
 def main():
 	pg.init()
-
+	# text.init_font()
+	
 	t = 0 # IRL s
-	secs = -LOG_S # IRL s (real life seconds)
+	secs = 10000-LOG_S # IRL s (real life seconds)
 	log = False
 
 	sun = Particle(m_s, 0, s0_s, u_s, SIZE_S, img_src="img/sun.png", name="Sun")
@@ -25,15 +30,19 @@ def main():
 	earth.v += a0/(2*FPS)
 	earth.s += earth.v/FPS
 
+	std = n = 0
+
 	# simulator loop
 	while not done:
 		dt = clock.tick_busy_loop(FPS)/1000  # IRL s
+		t += dt
+		n += 1
 
 		handle_events(dt)
 
 		# if dt is too large, accuracy will be impaired
 		if not paused and dt < 0.8:
-			t += dt
+			# FIXME t += dt
 
 			# logs data
 			if t >= secs + LOG_S:
@@ -44,7 +53,19 @@ def main():
 
 			if log: log = False
 
+		td = time()
+
 		draw(screen, p_list, t)
+
+		dtd = time() - td
+		print(f"Draw: {(dtd)*1000}ms\n")
+		std += dtd
+
+	
+	print(f"AVG || t: {t} || n: {n} || FPS: {n/t} || dt: {t*1000/n} || draw: {std*1000/n} || background: {stb*1000/n} ||",
+	   f"image: {sti*1000/n} || x-axis: {stx*1000/n} || y-axis: {sty*1000/n} || objects: {sto*1000/n} || text: {stt*1000/n}")
+
+
 
 def move(p_list: list[Particle], dt, log):
 	for p1, p2 in permutations(p_list, 2):
@@ -61,44 +82,59 @@ def move(p_list: list[Particle], dt, log):
 		else: 
 			p1.move(F_net, dt)
 
+stb = sto = stt = 0
+sti = stx = sty = 0
 def draw(screen: pg.Surface, objs: list[Particle], t):
 	# TODO: tutorial text / render before loop
+	global stb, sto, stt, sti, stx, sty
 
-	screen.blit(pg.transform.scale(bg, (WINDOW_WIDTH, WINDOW_HEIGHT)), (0, 0))
+	tb = time()
 
+	ti = time()
+	screen.blit(bg, (0, 0))
+	dti = time() - ti
+	print(f"Image: {dti*1000}ms")
+	sti += dti
+
+	tx = time()
 	pg.draw.line(screen, D_GRAY, \
 			  (0, MID.y() + center.y()*RES*zoom), \
 			  (WINDOW_WIDTH, MID.y() + center.y()*RES*zoom)) # x-axis
+	dtx = time() - tx
+	print(f"X-axis: {dtx*1000}ms")
+	stx += dtx
+
+	ty = time()
 	pg.draw.line(screen, D_GRAY, \
 			  (MID.x()  - center.x()*RES*zoom, 0), \
 			  (MID.y()  - center.x()*RES*zoom, WINDOW_HEIGHT)) # y-axis
+	dty = time() - ty
+	print(f"Y-axis: {dty*1000}ms")
+	sty += dty
+
+	dtb = time() - tb
+	print(f"Background: {dtb*1000}ms")
+	stb += dtb
+
+	to = time()
 
 	# render all objects
 	for obj in objs:
 		obj.draw(screen, center, zoom)
+	
+	dto = time() - to
+	print(f"Object: {dto*1000}ms")
+	sto += dto
 
-	font = pg.font.SysFont(None, 14)
+	tt = time()
 
-	# display the current simulation time
-	ttxt = font.render(f"t = {t*T_SCALE/DAY:.0f} days", True, MAGENTA)
-	screen.blit(ttxt, (WINDOW_WIDTH - ttxt.get_width() - 24, 20))
-
-	# display the current center of viewpoint and zoom
-	ctxt = font.render(f"{center:.2f}", True, ORANGE)
-	ztxt = font.render(f"Q {zoom:.2f}x", True, ORANGE)
-	screen.blit(ctxt, (WINDOW_WIDTH - ctxt.get_width() - 24, WINDOW_WIDTH - ctxt.get_height() - ztxt.get_height() - 20))
-	screen.blit(ztxt, (WINDOW_WIDTH - ztxt.get_width() - 24, WINDOW_WIDTH - ztxt.get_height() - 20))
-
-	if paused:
-		pausetxt = font.render("PAUSED II", True, RED)
-		screen.blit(pausetxt, (24, 20))
-	else:
-		# display the current fps
-		current_fps = clock.get_fps()
-		fpstxt = font.render(f"{round(current_fps, 0)} FPS", True, GREEN if current_fps >= FPS else RED)
-		screen.blit(fpstxt, (24, 20))
+	text.render(screen, t, paused)
 
 	pg.display.flip()
+
+	dtt = time() - tt
+	print(f"Text: {dtt*1000}ms")
+	stt += dtt
 
 last_key = None
 key_time = 0

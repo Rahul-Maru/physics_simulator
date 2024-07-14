@@ -2,6 +2,9 @@ from __future__ import annotations
 from vector import Vectoid, Vector
 from numbers import Number
 
+if __name__ != "__main__":
+	print(__name__)
+
 class Matrix(Vectoid):
 	def __init__(self, *args) -> None:
 		if len(args) == 0:

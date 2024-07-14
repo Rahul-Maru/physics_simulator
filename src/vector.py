@@ -3,6 +3,9 @@ from abc import ABC
 from numbers import Number
 import math
 
+if __name__ != "__main__":
+	print(__name__)
+
 # Class of things that support matrix multiplication, Vector-likes
 class Vectoid(ABC): pass
 

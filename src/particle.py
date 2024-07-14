@@ -2,6 +2,9 @@ from __future__ import annotations
 from numbers import Number
 from consts import *
 
+if __name__ != "__main__":
+	print(__name__)
+
 class Particle:
 	def __init__(self, m: Number, q: Number, s, u, size=(0.4, 0.4),
 			  color: tuple = LIME, img_src: str = "", flags: str = "", name: str = "Particle") -> None:
@@ -26,7 +29,7 @@ class Particle:
 
 		if len(img_src) > 0:
 			self.has_img = True
-			self.img = pg.image.load(img_src)
+			self.img = pg.image.load(img_src).convert_alpha()
 		else:
 			self.has_img = False
 			self.color = color
