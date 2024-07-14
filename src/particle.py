@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from numbers import Number
 from consts import *
+from colors import LIME
 
 class Particle:
 	def __init__(self, m: Number, q: Number, s, u, size=(0.4, 0.4),

@@ -2,6 +2,7 @@ from itertools import permutations
 
 from particle import Particle
 from consts import *
+from colors import *
 from text import text_engine
 
 done = False
@@ -40,7 +41,7 @@ def main() -> None:
 
 			move(p_list, dt, log)
 
-			if log: log = False
+			log = False
 
 		draw(screen, p_list, t)
 
@@ -54,19 +55,39 @@ def leapfrog_setup(p_list: list[Particle]) -> None:
 		p1.s += p1.v/FPS
 
 def move(p_list: list[Particle], dt, log) -> None:
+	ΣU = 0
+	Σp = Vector(0, 0)
+	ΣL = Vector(0, 0)
 	for p1, p2 in permutations(p_list, 2):
 		F_net = Fg(p1, p2)
 
 		if log:
-			U = p1.move(F_net, dt, ENERGY, p2)
+			U = p1.move(F_net, dt, ENERGY, p2) # [M][L]²[T]¯²
+			ΣU += U
+			p = p1.m*p1.v # [M][L][T]¯1
+			Σp += p
 			L = p1.m*p1.v*(p1.s-p2.s).mag() # [M][L]²[T]¯¹
+			ΣL += L
 
 			print(f"{p1.name} ← {p2.name}")
 			print(f"{p1:.3f}")
 			# TODO maybe move this out of the for loop
-			print(f"a: {F_net/p1.m:.3f}\nU: {U:.3E} || L: {L.mag():.3E}")
+			print(f"a: {F_net/p1.m:.3f}\nU: {U:.3E} || p: {p:0.3E} ({p.mag():.3E}) || L: {L:0.3E} ({L.mag():.3E})")
 		else: 
 			p1.move(F_net, dt)
+
+	if log:
+		print(f"ΣU: {ΣU:0.3E} || Σp: {Σp:0.3E} ({Σp.mag():.3E}) || ΣL: {ΣL:0.3E} ({ΣL.mag():.3E})\n")
+		text_engine.update_momenta(ΣU, Σp, ΣL)
+
+def barycenter(p_list: list[Particle]) -> Vector:
+	s = Vector(0, 0)
+	M = 0
+	for p in p_list:
+		s += p.m*p.s
+		M += p.m
+	return s/M
+
 
 def draw(screen: pg.Surface, objs: list[Particle], t) -> None:
 	# TODO: tutorial text
@@ -85,6 +106,8 @@ def draw(screen: pg.Surface, objs: list[Particle], t) -> None:
 	for obj in objs:
 		obj.draw(screen, center, zoom)
 
+	pg.draw.circle(screen, LIME, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4)
+
 	text_engine.render(screen, t, paused)
 
 	# crosshair
@@ -101,8 +124,9 @@ def handle_events(dt) -> None:
 
 	if last_key:
 		last_key_time += dt
-		if last_key_time >= 0.2:
+		if last_key_time >= 0.4:
 			last_key = None
+			text_engine.last_key = None
 			last_key_time = 0
 
 	for event in pg.event.get():
@@ -110,7 +134,7 @@ def handle_events(dt) -> None:
 			done = True
 
 		elif event.type == pg.KEYDOWN:
-			if event.key == pg.K_ESCAPE:
+			if event.key == pg.K_ESCAPE and last_key == pg.K_ESCAPE:
 				done = True
 
 			elif event.key == pg.K_SPACE:
@@ -135,6 +159,7 @@ def handle_events(dt) -> None:
 
 			else:
 				last_key = event.key
+				text_engine.last_key = last_key
 
 	keys = pg.key.get_pressed()
 	if keys[pg.K_UP]:

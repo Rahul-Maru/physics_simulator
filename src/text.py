@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from consts import pg, Vector, WINDOW_WIDTH, WINDOW_HEIGHT, T_SCALE, DAY, FPS, BLACK, WHITE, RED, ORANGE, GREEN, MAGENTA, clock
+from consts import MID, pg, Vector, WINDOW_WIDTH, WINDOW_HEIGHT, T_SCALE, DAY, FPS, clock
+from colors import *
 
 
 class TextEngine():
 	def __init__(self) -> None:
-		pass
+		self.last_key = None
 
 	def init_font(self) -> None:
 		self.font = pg.font.SysFont(None, 14)
@@ -13,41 +14,58 @@ class TextEngine():
 
 		self.update_zoom(1.00)
 		self.update_center(Vector(0, 0))
+		self.update_momenta(0, Vector(0, 0), Vector(0, 0))
 
-		self.ptxt = self.font.render("PAUSED II", True, RED)
-		self.ppos = (24, 20)
+		self.pausetxt = self.font.render("PAUSED II", True, RED)
+		self.quittxt = self.font.render("QUITTING... (press Esc again)", True, WHITE)
+		self.FPSpos = (24, 20)
 
-		tutorialtxt = "Esc - exit\nSpace - pause\nArrows - scroll\nC - centre\n+/= - zoom in\n- - zoom out\nCtrl + 0 - reset zoom"
-		self.tutorial = TextEngine.render_textrect(tutorialtxt, self.font, pg.Rect(0, 0, 92, 65), WHITE, BLACK)
+		tutorialtxt = "\n Esc ×2 — quit\n Space — pause\n Arrows — scroll\n C — centre\n +/= — zoom in\n - — zoom out\n Ctrl + 0 — reset zoom"
+		self.tutorial = TextEngine.render_textrect(tutorialtxt, self.font, pg.Rect(0, 0, 106, 78), WHITE, BLACK)
 
 
 	def update_zoom(self, zoom: float) -> None:
+		# TODO find better symbol for magnifying glass
 		self.ztxt = self.font.render(f"Q {zoom:.2f}x", True, ORANGE)
 		self.zpos = (WINDOW_WIDTH - self.ztxt.get_width() - 24, WINDOW_HEIGHT - self.ztxt.get_height() - 20)
 
 	def update_center(self, center: Vector):
 		self.ctxt = self.font.render(f"{center:.2f}", True, ORANGE)
-		self.cpos = (WINDOW_WIDTH - self.ctxt.get_width() - 24, WINDOW_HEIGHT - self.ctxt.get_height() - self.ztxt.get_height() - 20)
+		self.cpos = (WINDOW_WIDTH - self.ctxt.get_width() - 24, self.zpos[1] - self.ctxt.get_height())
+
+	def update_momenta(self, U: float, p: Vector, L: Vector) -> None:
+		self.etxt = self.font.render(f"U: {U:.2E}", True, CYAN)
+		self.ptxt = self.font.render(f"p: {p:.2E} ({p.mag():.2E})", True, CYAN)
+		self.ltxt = self.font.render(f"L: {L:.2E} ({L.mag():.2E})", True, CYAN)
+
+		self.lpos = (24, WINDOW_HEIGHT - self.ltxt.get_height() - 20)
+		self.ppos = (24, self.lpos[1] - self.ptxt.get_height())
+		self.epos = (24, self.ppos[1] - self.etxt.get_height())
 
 	def render(self, screen: pg.Surface, t: float, pause: bool) -> None:
 		# display the current simulation time
 		ttxt = self.font.render(f"t = {t*T_SCALE/DAY:.0f} days", True, MAGENTA)
 
-		if pause:
-			screen.blit(self.ptxt, self.ppos)
+		if self.last_key == pg.K_ESCAPE:
+			screen.blit(self.quittxt, self.FPSpos)
 		else:
-			# display the current fps
-			current_fps = clock.get_fps()
-			fpstxt = self.font.render(f"{round(current_fps, 0)} FPS", True, GREEN if current_fps >= FPS else RED)
-			screen.blit(fpstxt, self.ppos)
+			if pause:
+				screen.blit(self.pausetxt, self.FPSpos)
+			else:
+				# display the current fps
+				current_fps = clock.get_fps()
+				fpstxt = self.font.render(f"{round(current_fps, 0)} FPS", True, GREEN if current_fps >= FPS else RED)
+				screen.blit(fpstxt, self.FPSpos)
 
 		screen.blit(ttxt, (WINDOW_WIDTH - ttxt.get_width() - 24, 20))
 
 		# display the current center of viewpoint and zoom
 		screen.blit(self.ctxt, self.cpos)
 		screen.blit(self.ztxt, self.zpos)
-
-		screen.blit(self.tutorial, (24, 200))
+		screen.blit(self.etxt, self.epos)
+		screen.blit(self.ptxt, self.ppos)
+		screen.blit(self.ltxt, self.lpos)
+		screen.blit(self.tutorial, (24, MID.x()-100))
 
 
 	def render_textrect(string: str, font: pg.font.Font, rect: pg.Rect,

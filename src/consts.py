@@ -7,8 +7,8 @@ from matrix import Matrix
 
 # —simulation properties—
 # simulator dimensions
-WINDOW_WIDTH = 600 # pixels
-WINDOW_HEIGHT = 600 # pixels
+WINDOW_WIDTH = 500 # pixels
+WINDOW_HEIGHT = 500 # pixels
 MID = Vector(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2) # pixels
 
 RES = 150 # pixel/unit length
@@ -16,18 +16,6 @@ RES_MAT = Matrix(Vector(RES, 0), Vector(0, -RES))
 FPS = 240 # frames/IRL s (In-Real-Life seconds)  maximum framerate of the simulation
 DAY = 86400 # s/day  unit to display time counter
 LOG_S = 1 # IRL s  how frequently to log the system state
-
-# colors
-BLACK = (0, 0, 0)
-WHITE = (230, 225, 220)
-GRAY = (75, 78, 85)
-D_GRAY = (52, 57, 60)
-RED = (255, 24, 0)
-ORANGE = (253, 184, 19)
-GREEN = (0, 255, 0)
-LIME = (128, 255, 0)
-MAGENTA = (164, 0, 255)
-
 
 # unit vectors
 I = Vector(1, 0)
@@ -40,19 +28,19 @@ M_SCALE = 1 # kg/unit mass || 1 kg
 
 # universal properties
 G = 6.6743e-11 * T_SCALE**2 / L_SCALE**3 #  [M]¯¹[L]³[T]¯²
-Fg = lambda p1, p2: G * p1.m * p2.m / (p1.s - p2.s).mag()**2 * (p2.s - p1.s).unit() # [M][L]²[T]¯² force of gravity
+Fg = lambda p1, p2: G*p1.m*p2.m / (p1.s - p2.s).mag()**2 * (p2.s-p1.s).unit() # [M][L]²[T]¯² force of gravity
 # TODO Fc (coulomb's law)
 
 # energy function TODO maybe split this into GPE KE etc?
-ENERGY = lambda p1, p2: -G * m_e * m_s / (p1.s - p2.s).mag() + p1.m * p1.v.mag()**2 / 2 # [M][L]²[T]¯²
+ENERGY = lambda p1, p2: -G*m_e*m_s / (p1.s - p2.s).mag() + p1.m * p1.v.mag()**2 / 2 # [M][L]²[T]¯²
 
 
 # sun properties
-SIZE_S = (0.56, 0.56)
+SIZE_S = (0.56, 0.56) # [L]
 m_s = 1.9891e30 # [M]  mass of sun
 
 # earth properties
-SIZE_E = (0.12, 0.12)
+SIZE_E = (0.12, 0.12) # [L]
 m_e = 5.97219e29 # [M]  mass of earth
 
 # initial conditions
