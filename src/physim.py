@@ -18,8 +18,8 @@ def main() -> None:
 	secs = -LOG_S # IRL s (real life seconds)
 	log = False
 
-	sun = Particle(m_s, 0, s0_s, u_s, SIZE_S, img_src="img/sun.png", name="Sun")
-	earth = Particle(m_e, 0, s0_e, u_e, SIZE_E, img_src="img/earth.png", name="Earth")
+	sun = Particle(m_s, 0, s0_s, u_s, SIZE_S, img_src=SUN_IMG, name="Sun")
+	earth = Particle(m_e, 0, s0_e, u_e, SIZE_E, img_src=EARTH_IMG, name="Earth")
 	p_list = [sun, earth]
 
 	leapfrog_setup(p_list)

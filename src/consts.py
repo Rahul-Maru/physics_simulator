@@ -7,8 +7,9 @@ from matrix import Matrix
 
 # —simulation properties—
 # simulator dimensions
-WINDOW_WIDTH = 500 # pixels
-WINDOW_HEIGHT = 500 # pixels
+# BUG display stops working properly when w≠h
+WINDOW_WIDTH = 700 # pixels
+WINDOW_HEIGHT = 700 # pixels
 MID = Vector(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2) # pixels
 
 RES = 150 # pixel/unit length
@@ -38,10 +39,12 @@ ENERGY = lambda p1, p2: -G*m_e*m_s / (p1.s - p2.s).mag() + p1.m * p1.v.mag()**2 
 # sun properties
 SIZE_S = (0.56, 0.56) # [L]
 m_s = 1.9891e30 # [M]  mass of sun
+SUN_IMG = "img/sun.png"
 
 # earth properties
 SIZE_E = (0.12, 0.12) # [L]
-m_e = 5.97219e29 # [M]  mass of earth
+m_e = 5.97219e24 # [M]  mass of earth
+EARTH_IMG = "img/earth.png"
 
 # initial conditions
 s0_s = Vector(0, 0) # [L]  sun position
