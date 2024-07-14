@@ -32,7 +32,7 @@ class Particle:
 			self.has_img = False
 			self.color = color
 
-	def move(self, F: Vector, dt: Number, Ufn: function = None, o: Particle = None) -> None:
+	def move(self, F: Vector, dt: float, Ufn: function = None, o: Particle = None) -> None:
 		a = F/self.m # [L][T]¯²
 
 		# calculate energy when s and v are lined up
@@ -51,7 +51,7 @@ class Particle:
 
 		return U if Ufn else 0 # [M][L][T]¯²
 	
-	def draw(self, screen: pg.Surface, center: Vector, zoom: Number) -> None:
+	def draw(self, screen: pg.Surface, center: Vector, zoom: float) -> None:
 		coords = ((zoom * (RES_MAT@(self.s - center) - self.size*0.5)) + MID).tup()
 		size = (zoom*self.size).tup()
 

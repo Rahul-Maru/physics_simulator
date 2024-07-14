@@ -1,4 +1,3 @@
-from time import time
 from itertools import permutations
 
 from particle import Particle
@@ -10,7 +9,7 @@ paused = False
 center = Vector(0, 0)
 zoom = 1
 
-def main():
+def main() -> None:
 	pg.init()
 	text_engine.init_font()
 
@@ -22,12 +21,7 @@ def main():
 	earth = Particle(m_e, 0, s0_e, u_e, SIZE_E, img_src="img/earth.png", name="Earth")
 	p_list = [sun, earth]
 
-	# FIXME implement leap-frog for all particles
-	a0 = (Fg(earth, sun))/m_e # [L][T]¯²
-
-	# v(dt/2) | setup for the leap-frog integration method
-	earth.v += a0/(2*FPS)
-	earth.s += earth.v/FPS
+	leapfrog_setup(p_list)
 
 	while not done:
 		dt = clock.tick_busy_loop(FPS)/1000  # IRL s
@@ -51,7 +45,15 @@ def main():
 		draw(screen, p_list, t)
 
 
-def move(p_list: list[Particle], dt, log):
+def leapfrog_setup(p_list: list[Particle]) -> None:
+	# setup the half-step intervals required leap-frog integration method
+	for p1, p2 in permutations(p_list, 2):
+		a0 = (Fg(p1, p2))/p1.m # [L][T]¯²
+
+		p1.v += a0/(2*FPS)
+		p1.s += p1.v/FPS
+
+def move(p_list: list[Particle], dt, log) -> None:
 	for p1, p2 in permutations(p_list, 2):
 		F_net = Fg(p1, p2)
 
@@ -66,7 +68,7 @@ def move(p_list: list[Particle], dt, log):
 		else: 
 			p1.move(F_net, dt)
 
-def draw(screen: pg.Surface, objs: list[Particle], t):
+def draw(screen: pg.Surface, objs: list[Particle], t) -> None:
 	# TODO: tutorial text / render before loop
 
 	screen.blit(bg, (0, 0))
@@ -89,7 +91,7 @@ def draw(screen: pg.Surface, objs: list[Particle], t):
 last_key = None
 key_time = 0
 
-def handle_events(dt):
+def handle_events(dt) -> None:
 	global done, paused, center, zoom, last_key, key_time
 
 	if last_key:

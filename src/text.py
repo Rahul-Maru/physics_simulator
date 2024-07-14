@@ -17,19 +17,19 @@ class TextObject():
 		self.ptxt = self.font.render("PAUSED II", True, RED)
 		self.ppos = (24, 20)
 
-	def update_zoom(self, zoom):
+	def update_zoom(self, zoom: float) -> None:
 		self.ztxt = self.font.render(f"Q {zoom:.2f}x", True, ORANGE)
 		self.zpos = (WINDOW_WIDTH - self.ztxt.get_width() - 24, WINDOW_HEIGHT - self.ztxt.get_height() - 20)
 
-	def update_center(self, center):
+	def update_center(self, center: Vector):
 		self.ctxt = self.font.render(f"{center:.2f}", True, ORANGE)
 		self.cpos = (WINDOW_WIDTH - self.ctxt.get_width() - 24, WINDOW_HEIGHT - self.ctxt.get_height() - self.ztxt.get_height() - 20)
 
-	def render(self, screen, t, p):
+	def render(self, screen: pg.Surface, t: float, pause: bool) -> None:
 		# display the current simulation time
 		ttxt = self.font.render(f"t = {t*T_SCALE/DAY:.0f} days", True, MAGENTA)
 
-		if p:
+		if pause:
 			screen.blit(self.ptxt, self.ppos)
 		else:
 			# display the current fps

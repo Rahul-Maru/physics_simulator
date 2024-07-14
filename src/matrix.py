@@ -20,8 +20,8 @@ class Matrix(Vectoid):
 				self.basis = [Vector(1, 0), Vector(0, 1)] # identity matrix
 				return
 
-
 		self.basis = list(args)
+
 
 	def __len__(self) -> int:
 		return len(self.basis)

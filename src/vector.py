@@ -28,8 +28,8 @@ class Vector(Vectoid):
 			if not isinstance(arg, Number):
 				raise TypeError("Type Mismatch Error: Invalid type for Vector coordinates")
 
-
 		self.comps = list(args)
+
 
 	def x(self) -> Number:
 		if len(self) >= 1:
@@ -73,6 +73,8 @@ class Vector(Vectoid):
 		return sum
 	
 	def cross(self, o: Vector) -> Vector:
+		# only works with 3D vectors. If it has fewer, add 0's.
+		#   If it has more, truncate the extra dimensions
 		return Vector(self.y()*o.z() - self.z() * o.y(), self.z()*o.x() - self.x()*o.z(), self.x()*o.y() - self.y()*o.x())
 
 
