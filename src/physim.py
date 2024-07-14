@@ -47,24 +47,23 @@ def main():
 				if log:
 					print(f"{p1.name} <-- {p2.name}")
 					print(f"{p1}")
-					print(f"a: {F_net/p1.m} || U: {U} || L: {L.mag()}")
+					print(f"a: {F_net/p1.m} || U: {U} || L: {L.mag()}\n")
 
 			log = False
 
 		draw(screen, p_list, t)
 
 def draw(screen: pg.Surface, objs: list[Particle], t):
-	# BUG: zooming is centered at corner rather than middle
 	# TODO: tutorial text / render before loop
 
 	screen.blit(pg.transform.scale(bg, (WINDOW_WIDTH, WINDOW_HEIGHT)), (0, 0))
 
 	pg.draw.line(screen, D_GRAY, \
-			  (0, (MID.y() + center.y()*RES)*zoom), \
-			  (WINDOW_WIDTH, (MID.y() + center.y()*RES)*zoom)) # x-axis
+			  (0, MID.y() + center.y()*RES*zoom), \
+			  (WINDOW_WIDTH, MID.y() + center.y()*RES*zoom)) # x-axis
 	pg.draw.line(screen, D_GRAY, \
-			  ((MID.x()  - center.x()*RES)*zoom, 0), \
-			  ((MID.y()  - center.x()*RES)*zoom, WINDOW_HEIGHT)) # y-axis
+			  (MID.x()  - center.x()*RES*zoom, 0), \
+			  (MID.y()  - center.x()*RES*zoom, WINDOW_HEIGHT)) # y-axis
 
 	# render all objects
 	for obj in objs:

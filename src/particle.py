@@ -52,8 +52,8 @@ class Particle:
 		return U # [M][L][T]¯²
 	
 	def draw(self, screen: pg.Surface, center: Vector, zoom: Number) -> None:
-		coords = tuple((zoom*(RES_MAT@(self.s - center) - self.size*0.5 + MID)).comps)
-		size = tuple((zoom*self.size).comps)
+		coords = ((zoom*(RES_MAT@(self.s - center) - self.size*0.5))+MID).tup()
+		size = (zoom*self.size).tup()
 
 		if self.has_img:
 			screen.blit(pg.transform.scale(self.img, size), coords)

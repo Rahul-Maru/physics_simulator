@@ -35,6 +35,9 @@ class Matrix(Vectoid):
 		
 		return s[:-1]
 	
+	def __repr__(self) -> str:
+		return super().__repr__() + f"|| {list(map(lambda v: repr(v), self.basis))}"
+	
 	def __neg__(self) -> Matrix:
 		out = Matrix()
 		for base in self.basis:

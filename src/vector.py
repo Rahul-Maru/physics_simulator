@@ -92,6 +92,12 @@ class Vector(Vectoid):
 		vectstr = "<"
 		for comp in self.comps: vectstr += f"{comp}, "
 		return vectstr[:-2] + ">"
+
+	def __repr__(self) -> str:
+		return super().__repr__() + f"|| {self.comps=}"
+
+	def tup(self) -> tuple:
+		return tuple(self.comps)
 	
 	def __format__(self, format_spec: str) -> str:
 		if len(self.comps) == 0:
