@@ -3,17 +3,16 @@ from itertools import permutations
 
 from particle import Particle
 from consts import *
+from text import text_engine
 
 done = False
 paused = False
 center = Vector(0, 0)
 zoom = 1
 
-# text = TextObject()
-
 def main():
 	pg.init()
-	# text.init_font()
+	text_engine.init_font()
 	
 	t = 0 # IRL s
 	secs = 10000-LOG_S # IRL s (real life seconds)
@@ -30,7 +29,7 @@ def main():
 	earth.v += a0/(2*FPS)
 	earth.s += earth.v/FPS
 
-	std = n = 0
+	ste = stm = std = n = 0
 
 	# simulator loop
 	while not done:
@@ -38,10 +37,16 @@ def main():
 		t += dt
 		n += 1
 
+		te = time()
 		handle_events(dt)
+		dte = time() - te
+		ste += dte
+		print(f"Event: {dte*1000}ms")
 
-		# if dt is too large, accuracy will be impaired
-		if not paused and dt < 0.8:
+		tm = time()
+		# if dt is too large, accuracy will be impaired, so prevent the movement
+		#   cycle from occuring if the framerate falls below 24 FPS
+		if not paused and dt < 0.42:
 			# FIXME t += dt
 
 			# logs data
@@ -53,16 +58,22 @@ def main():
 
 			if log: log = False
 
+		dtm = time() - tm
+		stm += dtm
+		print(f"Movement: {dtm*1000}ms")
+
 		td = time()
 
 		draw(screen, p_list, t)
 
 		dtd = time() - td
-		print(f"Draw: {(dtd)*1000}ms\n")
+		print(f"Draw: {(dtd)*1000}ms")
 		std += dtd
 
+		print(f"dt: {dt} || All: {(time() - te)*1000}\n")
+
 	
-	print(f"AVG || t: {t} || n: {n} || FPS: {n/t} || dt: {t*1000/n} || draw: {std*1000/n} || background: {stb*1000/n} ||",
+	print(f"AVG || t: {t} || n: {n} || FPS: {n/t} || dt: {t*1000/n} || event: {ste*1000/n} || movement: {stm*1000/n} || draw: {std*1000/n} || background: {stb*1000/n} ||",
 	   f"image: {sti*1000/n} || x-axis: {stx*1000/n} || y-axis: {sty*1000/n} || objects: {sto*1000/n} || text: {stt*1000/n}")
 
 
@@ -128,7 +139,7 @@ def draw(screen: pg.Surface, objs: list[Particle], t):
 
 	tt = time()
 
-	text.render(screen, t, paused)
+	text_engine.render(screen, t, paused)
 
 	pg.display.flip()
 
@@ -158,24 +169,36 @@ def handle_events(dt):
 				paused = not paused
 			elif event.key == pg.K_c:
 				center = Vector(0, 0)
+				text_engine.update_center(center)
 			elif ((event.key == pg.K_LCTRL or event.key == pg.K_RCTRL) and last_key == pg.K_0) \
 			  or ((last_key == pg.K_LCTRL or last_key == pg.K_RCTRL) and event.key == pg.K_0):
 				zoom = 1
+				text_engine.update_zoom(zoom)
 			elif event.key == pg.K_EQUALS or event.key == pg.K_PLUS:
 				zoom *= 1.1
+				text_engine.update_zoom(zoom)
 			elif event.key == pg.K_MINUS:
 				zoom *= 0.9090909091
-			else: last_key = event.key
+				text_engine.update_zoom(zoom)
+			else: 
+				last_key = event.key
 
 	keys = pg.key.get_pressed()
 	if keys[pg.K_UP]:
 		center += J*dt/zoom
+		text_engine.update_center(center)
+
 	if keys[pg.K_RIGHT]:
 		center += I*dt/zoom
+		text_engine.update_center(center)
+
 	if keys[pg.K_DOWN]:
 		center -= J*dt/zoom
+		text_engine.update_center(center)
+
 	if keys[pg.K_LEFT]:
 		center -= I*dt/zoom
+		text_engine.update_center(center)
 
 
 if __name__ == "__main__":
