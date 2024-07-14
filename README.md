@@ -3,6 +3,7 @@ Simulator that simulates the motions of the heavenly bodies
 ———CREDITS———
 
 Source Code: Rahul S Maru with the guidance of Dr. Vikram Vyas
+- src.text.render_textrect() - https://pygame.org/pcr/text_rect/index.php
 
 Original Jupyter code ("other" folder): Dr. Vikram Vyas
 

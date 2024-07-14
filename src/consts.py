@@ -18,13 +18,16 @@ DAY = 86400 # s/day  unit to display time counter
 LOG_S = 1 # IRL s  how frequently to log the system state
 
 # colors
+BLACK = (0, 0, 0)
+WHITE = (230, 225, 220)
+GRAY = (75, 78, 85)
+D_GRAY = (52, 57, 60)
 RED = (255, 24, 0)
 ORANGE = (253, 184, 19)
 GREEN = (0, 255, 0)
 LIME = (128, 255, 0)
 MAGENTA = (164, 0, 255)
-GRAY = (75, 78, 85)
-D_GRAY = (52, 57, 60)
+
 
 # unit vectors
 I = Vector(1, 0)

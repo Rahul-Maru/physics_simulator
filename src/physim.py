@@ -125,11 +125,11 @@ def handle_events(dt) -> None:
 				zoom = 1
 				text_engine.update_zoom(zoom)
 
-			elif event.key == pg.K_EQUALS or event.key == pg.K_PLUS:
+			elif event.key == pg.K_EQUALS or event.key == pg.K_PLUS or event.key == pg.K_KP_PLUS:
 				zoom *= 1.1
 				text_engine.update_zoom(zoom)
 
-			elif event.key == pg.K_MINUS:
+			elif event.key == pg.K_MINUS or event.key == pg.K_KP_MINUS:
 				zoom *= 0.9090909091
 				text_engine.update_zoom(zoom)
 
