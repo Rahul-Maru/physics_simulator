@@ -23,9 +23,8 @@ ORANGE = (253, 184, 19)
 GREEN = (0, 255, 0)
 LIME = (128, 255, 0)
 MAGENTA = (164, 0, 255)
-
-D_YELLOW = (120, 100, 80)
-D_GRAY = (60, 60, 60)
+GRAY = (75, 78, 85)
+D_GRAY = (52, 57, 60)
 
 # unit vectors
 I = Vector(1, 0)

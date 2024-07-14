@@ -61,15 +61,15 @@ def move(p_list: list[Particle], dt, log) -> None:
 			U = p1.move(F_net, dt, ENERGY, p2)
 			L = p1.m*p1.v*(p1.s-p2.s).mag() # [M][L]²[T]¯¹
 
-			print(f"{p1.name} <-- {p2.name}")
+			print(f"{p1.name} ← {p2.name}")
 			print(f"{p1:.3f}")
 			# TODO maybe move this out of the for loop
-			print(f"a: {F_net/p1.m:.3f} || U: {U:.3E} || L: {L.mag():.3E}\n")
+			print(f"a: {F_net/p1.m:.3f}\nU: {U:.3E} || L: {L.mag():.3E}")
 		else: 
 			p1.move(F_net, dt)
 
 def draw(screen: pg.Surface, objs: list[Particle], t) -> None:
-	# TODO: tutorial text / render before loop
+	# TODO: tutorial text
 
 	screen.blit(bg, (0, 0))
 
@@ -77,8 +77,9 @@ def draw(screen: pg.Surface, objs: list[Particle], t) -> None:
 			  (0, MID.y() + center.y()*RES*zoom), \
 			  (WINDOW_WIDTH, MID.y() + center.y()*RES*zoom)) # x-axis
 	pg.draw.line(screen, D_GRAY, \
-			  (MID.x()  - center.x()*RES*zoom, 0), \
-			  (MID.y()  - center.x()*RES*zoom, WINDOW_HEIGHT)) # y-axis
+			  (MID.x() - center.x()*RES*zoom, 0), \
+			  (MID.y() - center.x()*RES*zoom, WINDOW_HEIGHT)) # y-axis
+
 
 	# render all objects
 	for obj in objs:
@@ -86,19 +87,23 @@ def draw(screen: pg.Surface, objs: list[Particle], t) -> None:
 
 	text_engine.render(screen, t, paused)
 
+	# crosshair
+	pg.draw.line(screen, GRAY, (MID.x() - 10, MID.y()), (MID.x() + 10, MID.y()))
+	pg.draw.line(screen, GRAY, (MID.x(), MID.y() - 10), (MID.x(), MID.y() + 10))
+
 	pg.display.flip()
 
 last_key = None
-key_time = 0
+last_key_time = 0
 
 def handle_events(dt) -> None:
-	global done, paused, center, zoom, last_key, key_time
+	global done, paused, center, zoom, last_key, last_key_time
 
 	if last_key:
-		key_time += dt
-		if key_time >= 0.5:
+		last_key_time += dt
+		if last_key_time >= 0.2:
 			last_key = None
-			key_time = 0
+			last_key_time = 0
 
 	for event in pg.event.get():
 		if event.type == pg.QUIT:
