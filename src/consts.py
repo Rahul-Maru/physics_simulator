@@ -1,10 +1,11 @@
 import pygame as pg
-from vector import Vector
-from matrix import Matrix
 from math import *
 
-# simulation properties
+from vector import Vector
+from matrix import Matrix
 
+
+# —simulation properties—
 # simulator dimensions
 WINDOW_WIDTH = 600 # pixels
 WINDOW_HEIGHT = 600 # pixels
@@ -12,7 +13,7 @@ MID = Vector(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2) # pixels
 
 RES = 150 # pixel/unit length
 RES_MAT = Matrix(Vector(RES, 0), Vector(0, -RES))
-FPS = 120 # frames/IRL s (In-Real-Life seconds)  maximum framerate of the simulation
+FPS = 240 # frames/IRL s (In-Real-Life seconds)  maximum framerate of the simulation
 DAY = 86400 # s/day  unit to display time counter
 LOG_S = 1 # IRL s  how frequently to log the system state
 

@@ -1,6 +1,9 @@
 from __future__ import annotations
-from vector import Vectoid, Vector
+
 from numbers import Number
+
+from vector import Vectoid, Vector
+
 
 class Matrix(Vectoid):
 	def __init__(self, *args) -> None:

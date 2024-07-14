@@ -1,6 +1,9 @@
-from consts import *
-from particle import Particle
+from time import time
 from itertools import permutations
+
+from particle import Particle
+from consts import *
+from text import text_engine
 
 done = False
 paused = False
@@ -9,6 +12,7 @@ zoom = 1
 
 def main():
 	pg.init()
+	text_engine.init_font()
 
 	t = 0 # IRL s
 	secs = -LOG_S # IRL s (real life seconds)
@@ -25,14 +29,14 @@ def main():
 	earth.v += a0/(2*FPS)
 	earth.s += earth.v/FPS
 
-	# simulator loop
 	while not done:
 		dt = clock.tick_busy_loop(FPS)/1000  # IRL s
 
 		handle_events(dt)
 
-		# if dt is too large, accuracy will be impaired
-		if not paused and dt < 0.8:
+		# if dt is too large, accuracy will be impaired, so prevent the movement
+		#   cycle from occuring if the framerate falls below 24 FPS
+		if not paused and dt < 0.42:
 			t += dt
 
 			# logs data
@@ -45,6 +49,7 @@ def main():
 			if log: log = False
 
 		draw(screen, p_list, t)
+
 
 def move(p_list: list[Particle], dt, log):
 	for p1, p2 in permutations(p_list, 2):
@@ -77,26 +82,7 @@ def draw(screen: pg.Surface, objs: list[Particle], t):
 	for obj in objs:
 		obj.draw(screen, center, zoom)
 
-	font = pg.font.SysFont(None, 14)
-
-	# display the current simulation time
-	ttxt = font.render(f"t = {t*T_SCALE/DAY:.0f} days", True, MAGENTA)
-	screen.blit(ttxt, (WINDOW_WIDTH - ttxt.get_width() - 24, 20))
-
-	# display the current center of viewpoint and zoom
-	ctxt = font.render(f"{center:.2f}", True, ORANGE)
-	ztxt = font.render(f"Q {zoom:.2f}x", True, ORANGE)
-	screen.blit(ctxt, (WINDOW_WIDTH - ctxt.get_width() - 24, WINDOW_WIDTH - ctxt.get_height() - ztxt.get_height() - 20))
-	screen.blit(ztxt, (WINDOW_WIDTH - ztxt.get_width() - 24, WINDOW_WIDTH - ztxt.get_height() - 20))
-
-	if paused:
-		pausetxt = font.render("PAUSED II", True, RED)
-		screen.blit(pausetxt, (24, 20))
-	else:
-		# display the current fps
-		current_fps = clock.get_fps()
-		fpstxt = font.render(f"{round(current_fps, 0)} FPS", True, GREEN if current_fps >= FPS else RED)
-		screen.blit(fpstxt, (24, 20))
+	text_engine.render(screen, t, paused)
 
 	pg.display.flip()
 
@@ -115,31 +101,50 @@ def handle_events(dt):
 	for event in pg.event.get():
 		if event.type == pg.QUIT:
 			done = True
+
 		elif event.type == pg.KEYDOWN:
 			if event.key == pg.K_ESCAPE:
 				done = True
+
 			elif event.key == pg.K_SPACE:
 				paused = not paused
+
 			elif event.key == pg.K_c:
 				center = Vector(0, 0)
+				text_engine.update_center(center)
+
 			elif ((event.key == pg.K_LCTRL or event.key == pg.K_RCTRL) and last_key == pg.K_0) \
 			  or ((last_key == pg.K_LCTRL or last_key == pg.K_RCTRL) and event.key == pg.K_0):
 				zoom = 1
+				text_engine.update_zoom(zoom)
+
 			elif event.key == pg.K_EQUALS or event.key == pg.K_PLUS:
 				zoom *= 1.1
+				text_engine.update_zoom(zoom)
+
 			elif event.key == pg.K_MINUS:
 				zoom *= 0.9090909091
-			else: last_key = event.key
+				text_engine.update_zoom(zoom)
+
+			else:
+				last_key = event.key
 
 	keys = pg.key.get_pressed()
 	if keys[pg.K_UP]:
 		center += J*dt/zoom
+		text_engine.update_center(center)
+
 	if keys[pg.K_RIGHT]:
 		center += I*dt/zoom
+		text_engine.update_center(center)
+
 	if keys[pg.K_DOWN]:
 		center -= J*dt/zoom
+		text_engine.update_center(center)
+
 	if keys[pg.K_LEFT]:
 		center -= I*dt/zoom
+		text_engine.update_center(center)
 
 
 if __name__ == "__main__":
