@@ -26,7 +26,7 @@ class Particle:
 
 		if len(img_src) > 0:
 			self.has_img = True
-			self.img = pg.image.load(img_src)
+			self.img = pg.image.load(img_src).convert_alpha()
 		else:
 			self.has_img = False
 			self.color = color

@@ -12,7 +12,7 @@ MID = Vector(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2) # pixels
 
 RES = 150 # pixel/unit length
 RES_MAT = Matrix(Vector(RES, 0), Vector(0, -RES))
-FPS = 60 # frames/IRL s (In-Real-Life seconds)  maximum framerate of the simulation
+FPS = 120 # frames/IRL s (In-Real-Life seconds)  maximum framerate of the simulation
 DAY = 86400 # s/day  unit to display time counter
 LOG_S = 1 # IRL s  how frequently to log the system state
 
@@ -63,4 +63,4 @@ u_s = Vector(0, 0) # [L][T]¯1  inital velocity of sun
 # pygame setup
 clock = pg.time.Clock()
 screen = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-bg = pg.image.load("img/stars.png")
+bg = pg.transform.scale(pg.image.load("img/stars.png"), (WINDOW_WIDTH, WINDOW_HEIGHT)).convert_alpha()

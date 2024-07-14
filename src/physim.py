@@ -64,7 +64,7 @@ def move(p_list: list[Particle], dt, log):
 def draw(screen: pg.Surface, objs: list[Particle], t):
 	# TODO: tutorial text / render before loop
 
-	screen.blit(pg.transform.scale(bg, (WINDOW_WIDTH, WINDOW_HEIGHT)), (0, 0))
+	screen.blit(bg, (0, 0))
 
 	pg.draw.line(screen, D_GRAY, \
 			  (0, MID.y() + center.y()*RES*zoom), \
