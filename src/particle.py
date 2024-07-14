@@ -1,8 +1,6 @@
 from __future__ import annotations
 from numbers import Number
-from vector import Vector
 from consts import *
-import math
 
 class Particle:
 	def __init__(self, m: Number, q: Number, s, u, size=(0.4, 0.4),
@@ -33,26 +31,27 @@ class Particle:
 			self.has_img = False
 			self.color = color
 
-	
 	def move(self, F: Vector, dt: Number, Ufn: function = None, o: Particle = None) -> None:
 		a = F/self.m # [L][T]¯²
 
-		# update the velocity to be on a whole-numbered time step
-		self.v += a*dt/2
-		# calculate energy when s, and v are lined up
+		# calculate energy when s and v are lined up
 		if Ufn:
+			# update the velocity to be on a whole-numbered time step
+			self.v += a*dt/2
+
 			U = Ufn(self, o)
+
+			# update velocity back to half-step to continue leap-frogging
+			self.v += a*dt/2
 		else: 
-			U = 0
-		# update velocity back to half-step to continue leap-frogging
-		self.v += a*dt/2
+			self.v += a*dt
 
 		self.s += self.v*dt * self.mobile
 
-		return U # [M][L][T]¯²
+		return U if Ufn else 0 # [M][L][T]¯²
 	
 	def draw(self, screen: pg.Surface, center: Vector, zoom: Number) -> None:
-		coords = ((zoom*(RES_MAT@(self.s - center) - self.size*0.5))+MID).tup()
+		coords = ((zoom * (RES_MAT@(self.s - center) - self.size*0.5)) + MID).tup()
 		size = (zoom*self.size).tup()
 
 		if self.has_img:
@@ -62,4 +61,9 @@ class Particle:
 
 
 	def __str__(self) -> str:
-		return f"{self.name} |||  m: {self.m} || q: {'+' if self.q > 0 else ''}{self.q} || s: {self.s} || v: {self.v}"
+		return f"{self.name} |||  m: {self.m} || q: {self.q:+} || s: {self.s} || v: {self.v}"
+
+	def __format__(self, f: str) -> str:
+		e = lambda x : f.replace("f", "E") if x != 0 and abs(log10(abs(x))) >= 2 else f
+		qf= ('+' if '+' not in f else '') + e(self.q)
+		return f"{self.name} |||  m: {self.m.__format__(e(self.m))} || q: {self.q.__format__(qf)} || s: {self.s.__format__(e(self.s.mag()))} || v: {self.v.__format__(e(self.s.mag()))}"

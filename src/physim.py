@@ -31,8 +31,8 @@ def main():
 
 		handle_events(dt)
 
-		# if dt is too large, do not proceed
-		if not paused and dt < 0.1:
+		# if dt is too large, accuracy will be impaired
+		if not paused and dt < 0.8:
 			t += dt
 
 			# logs data
@@ -40,18 +40,26 @@ def main():
 				secs += LOG_S
 				log = True
 
-			for p1, p2 in permutations(p_list, 2):
-				F_net = Fg(p1, p2)
-				U = p1.move(F_net, dt, ENERGY, p2)
-				L = p1.m*p1.v*(p1.s-p2.s).mag() # [M][L]²[T]¯¹
-				if log:
-					print(f"{p1.name} <-- {p2.name}")
-					print(f"{p1}")
-					print(f"a: {F_net/p1.m} || U: {U} || L: {L.mag()}\n")
+			move(p_list, dt, log)
 
-			log = False
+			if log: log = False
 
 		draw(screen, p_list, t)
+
+def move(p_list: list[Particle], dt, log):
+	for p1, p2 in permutations(p_list, 2):
+		F_net = Fg(p1, p2)
+
+		if log:
+			U = p1.move(F_net, dt, ENERGY, p2)
+			L = p1.m*p1.v*(p1.s-p2.s).mag() # [M][L]²[T]¯¹
+
+			print(f"{p1.name} <-- {p2.name}")
+			print(f"{p1:.3f}")
+			# TODO maybe move this out of the for loop
+			print(f"a: {F_net/p1.m:.3f} || U: {U:.3E} || L: {L.mag():.3E}\n")
+		else: 
+			p1.move(F_net, dt)
 
 def draw(screen: pg.Surface, objs: list[Particle], t):
 	# TODO: tutorial text / render before loop
@@ -77,7 +85,7 @@ def draw(screen: pg.Surface, objs: list[Particle], t):
 
 	# display the current center of viewpoint and zoom
 	ctxt = font.render(f"{center:.2f}", True, ORANGE)
-	ztxt = font.render(f"Q {zoom:.2f} x", True, ORANGE)
+	ztxt = font.render(f"Q {zoom:.2f}x", True, ORANGE)
 	screen.blit(ctxt, (WINDOW_WIDTH - ctxt.get_width() - 24, WINDOW_WIDTH - ctxt.get_height() - ztxt.get_height() - 20))
 	screen.blit(ztxt, (WINDOW_WIDTH - ztxt.get_width() - 24, WINDOW_WIDTH - ztxt.get_height() - 20))
 
