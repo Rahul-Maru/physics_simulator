@@ -62,22 +62,6 @@ class Vector(Vectoid):
 		
 		return self/self.mag()
 
-	def dot(self, o: Vector) -> Number:
-		if len(self.comps) == 0:
-			return 0
-
-		sum = 0
-		for a, b in zip(self.comps, o.comps):
-			sum += a*b
-
-		return sum
-	
-	def cross(self, o: Vector) -> Vector:
-		# only works with 3D vectors. If it has fewer, add 0's.
-		#   If it has more, truncate the extra dimensions
-		return Vector(self.y()*o.z() - self.z()*o.y(), self.z()*o.x() - self.x()*o.z(), self.x()*o.y() - self.y()*o.x())
-
-
 	def __eq__(self, o: Vector) -> bool:
 		if isinstance(o, Vector):
 			if len(self) == len(o):
@@ -141,11 +125,19 @@ class Vector(Vectoid):
 		self += -o
 		return self
 
-	def __mul__(self, k: Number) -> Vector:
-		result = Vector()
-		for comp in self.comps:
-			result.comps.append(k*comp)
-		return result
+	def __mul__(self, o) -> Vector:
+		# scalar multiplication
+		if isinstance(o, Number):
+			result = Vector()
+			for comp in self.comps:
+				result.comps.append(o*comp)
+			return result
+		# cross product
+		elif isinstance(o, Vector):
+			# only works with 3D vectors. If it has fewer, add 0's.
+			#   If it has more, truncate the extra dimensions
+			return Vector(self.y()*o.z() - self.z()*o.y(), self.z()*o.x() - self.x()*o.z(), self.x()*o.y() - self.y()*o.x())
+
 
 	def __imul__(self, k: Number) -> Vector:
 		for i in range(len(self.comps)):
@@ -158,9 +150,22 @@ class Vector(Vectoid):
 			result.comps.append(k*comp)
 		return result
 
+	def __matmul__(self, o: Vector) -> Number:
+		if len(self.comps) == 0:
+			return 0
+
+		sum = 0
+		for a, b in zip(self.comps, o.comps):
+			sum += a*b
+
+		return sum
+
 	def __truediv__(self, k: Number) -> Vector:
 		return self*(1/k)
 
 	def __itruediv__(self, k: Number) -> Vector:
 		self *= 1/k
 		return self
+
+	def __pow__(self, k: Number) -> Number:
+		return self.mag()**k

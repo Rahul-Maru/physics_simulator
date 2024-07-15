@@ -19,7 +19,7 @@ class Spring:
 		return -self.k*(s-self.sr)
 	
 	def energy(self, s) -> Number:
-		return self.k*(s - self.sr).mag()**2/2
+		return self.k*(s - self.sr)**2/2
 	
 	def draw(self, screen: pg.Surface) -> None:
 		# spring image

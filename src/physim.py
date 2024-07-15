@@ -10,12 +10,14 @@ done = False
 paused = False
 center = Vector(0, 0)
 zoom = 1
+t = 0 # IRL s
+
 
 def main() -> None:
+	global t
 	pg.init()
 	text_engine.init_font()
 
-	t = 0 # IRL s
 	secs = -LOG_S # IRL s (real life seconds)
 	log = False
 
@@ -45,11 +47,12 @@ def main() -> None:
 
 			log = False
 
-		draw(screen, particle_list, t)
+		draw(screen, particle_list)
 
 	pg.quit()
 
-	plot((tlist, "t/day"), (Ulist, "Energy"), (plist, "|Linear Momentum|"), (Llist, "|Angular momentum|"))
+	print(Vector.c)
+	# plot((tlist, "t/day"), (Ulist, "Energy"), (plist, "|Linear Momentum|"), (Llist, "|Angular momentum|"))
 
 
 def leapfrog_setup(particle_list: list[Particle]) -> None:
@@ -69,21 +72,21 @@ def move(particle_list: list[Particle], dt, log) -> None:
 	ΣU = 0
 	Σp = Vector(0, 0)
 	ΣL = Vector(0, 0, 0)
-	for p1, p2 in permutations(particle_list, 2):
-		F_net = Fg(p1, p2)
+	if log: print(f"{t=}s ({t*T_SCALE/DAY} days)")
+	for p1, p2 in permutations(particle_list, 2): # TODO replace with combinations
+		F_net = FORCE(p1, p2)
 
 		if log:
 			U = p1.move(F_net, dt, ENERGY, p2) # [M][L]²[T]¯²
 			ΣU += U
 			p = p1.m*p1.v # [M][L][T]¯1
 			Σp += p
-			L = p.cross(p1.s) # [M][L]²[T]¯¹
+			L = p*p1.s # [M][L]²[T]¯¹
 			ΣL += L
 
 			print(f"{p1.name} ← {p2.name}")
 			print(f"{p1:.3f}")
-			# TODO maybe move this out of the for loop
-			print(f"a: {F_net/p1.m:.3f}\nU: {U:.3E} || p: {p:0.3E} ({p.mag():.3E}) || L: {L:0.3E} ({L.mag():.3E})")
+			print(f"a: {F_net/p1.m:.3f}\nU: {U:.3E} || p: {p:0.3E} ({p.mag():.3E}) || L: {L.mag():.3E}")
 		else: 
 			p1.move(F_net, dt)
 
@@ -92,7 +95,7 @@ def move(particle_list: list[Particle], dt, log) -> None:
 		plist.append(Σp.mag())
 		Llist.append(ΣL.mag())
 
-		print(f"ΣU: {ΣU:0.3E} || Σp: {Σp:0.3E} ({Σp.mag():.3E}) || ΣL: {ΣL:0.3E} ({ΣL.mag():.3E})\n")
+		print(f"ΣU: {ΣU:0.3E} || Σp: {Σp:0.3E} ({Σp.mag():.3E}) || ΣL: {ΣL.mag():.3E}\n")
 		text_engine.update_momenta(ΣU, Σp, ΣL)
 
 def barycenter(p_list: list[Particle]) -> Vector:
@@ -104,9 +107,7 @@ def barycenter(p_list: list[Particle]) -> Vector:
 	return s/M
 
 
-def draw(screen: pg.Surface, objs: list[Particle], t) -> None:
-	# TODO: tutorial text
-
+def draw(screen: pg.Surface, objs: list[Particle]) -> None:
 	screen.blit(bg, (0, 0))
 
 	pg.draw.line(screen, D_GRAY, \
@@ -121,8 +122,7 @@ def draw(screen: pg.Surface, objs: list[Particle], t) -> None:
 	for obj in objs:
 		obj.draw(screen, center, zoom)
 
-	# center of mass TODO find a better color
-	pg.draw.circle(screen, LIME, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4*zoom)
+	pg.draw.circle(screen, MAROON, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4*zoom)
 
 	text_engine.render(screen, t, paused)
 

@@ -1,5 +1,5 @@
 import pygame as pg
-from math import *
+from math import log10, pi as π
 
 from vector import Vector
 from matrix import Matrix
@@ -24,16 +24,28 @@ J = Vector(0, 1)
 
 # unit scale factors
 L_SCALE = 149597870700 # m/unit length || 1 AU
-T_SCALE = 86400*50 # s/unit time || n Days
+T_SCALE = 86400*50 # s/unit time || n Days w. n=50
 M_SCALE = 1 # kg/unit mass || 1 kg
+A_SCALE = 2.3148148e-7 # A/unit current || 1 C/n days
 
 # —universal properties—
-G = 6.6743e-11 * T_SCALE**2 / L_SCALE**3 #  [M]¯¹[L]³[T]¯²
-Fg = lambda p1, p2: G*p1.m*p2.m / (p1.s - p2.s).mag()**2 * (p2.s-p1.s).unit() # [M][L]²[T]¯² force of gravity
-# TODO Fc (coulomb's law)
+# Newton's Gravitational Constant
+G = 6.6743e-11 * T_SCALE**2 / L_SCALE**3 # [M]¯¹[L]³[T]¯²
+# Permittivity of free space / Epsilon naught
+ε0 = 8.8541878128e-12 * L_SCALE**3 / T_SCALE**4 / A_SCALE**2 # [M]¯¹[L]¯³[T]⁴[A]²
+K = 1/(4*π*ε0) # [M][L]³[T]¯⁴[A]¯²  Coulomb's constant
 
-# energy function TODO maybe split this into GPE KE etc?
-ENERGY = lambda p1, p2: -G*m_e*m_s / (p1.s - p2.s).mag() + p1.m * p1.v.mag()**2 / 2 # [M][L]²[T]¯²
+# force of gravity
+Fg = lambda p1, p2: G * p1.m * p2.m / (p1.s-p2.s)**2 * (p2.s-p1.s).unit() # [M][L][T]¯²
+# electrostatic force
+Fc = lambda p1, p2: K * p1.q * p2.q / (p1.s-p2.s)**2 * (p2.s-p1.s).unit() # [M][L][T]¯²
+FORCE = lambda p1, p2: Fg(p1, p2) + Fc(p1, p2) # [M][L][T]¯² net force
+
+# energy function  [M][L]²[T]¯² TODO redo energy calculation for system rather than pairs of bodies
+KE = lambda p: p.m * p.v**2 / 2 # kinetic energy
+GPE = lambda p1, p2: -G * p1.m * p2.m / (p1.s-p2.s).mag() # gravitational potential energy
+EPE = lambda p1, p2: K * p1.q * p2.q / (p1.s-p2.s).mag() # electrostatic potential energy
+ENERGY = lambda p1, p2: KE(p1) + GPE(p1, p2) + EPE(p1, p2) # total energy
 
 # —body properties—
 # sun properties

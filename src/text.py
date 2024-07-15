@@ -9,7 +9,7 @@ class TextEngine():
 		self.last_key = None
 
 	def init_font(self) -> None:
-		self.font = pg.font.SysFont(None, 14)
+		self.font = pg.font.SysFont(None, 16)
 		print(RED)
 
 		self.update_zoom(1.00)
@@ -21,12 +21,11 @@ class TextEngine():
 		self.FPSpos = (24, 20)
 
 		tutorialtxt = "\n Esc ×2 — quit\n Space — pause\n Arrows — scroll\n C — centre\n +/= — zoom in\n - — zoom out\n Ctrl + 0 — reset zoom"
-		self.tutorial = TextEngine.render_textrect(tutorialtxt, self.font, pg.Rect(0, 0, 106, 78), WHITE, BLACK)
+		self.tutorial = TextEngine.render_textrect(tutorialtxt, self.font, pg.Rect(0, 0, 126, 98), WHITE, BLACK)
 
 
 	def update_zoom(self, zoom: float) -> None:
-		# TODO find better symbol for magnifying glass
-		self.ztxt = self.font.render(f"Q {zoom:.2f}x", True, ORANGE)
+		self.ztxt = self.font.render(f"zoom: {zoom:.2f}x", True, ORANGE)
 		self.zpos = (WINDOW_WIDTH - self.ztxt.get_width() - 24, WINDOW_HEIGHT - self.ztxt.get_height() - 20)
 
 	def update_center(self, center: Vector):
@@ -36,7 +35,7 @@ class TextEngine():
 	def update_momenta(self, U: float, p: Vector, L: Vector) -> None:
 		self.etxt = self.font.render(f"U: {U:.2E}", True, CYAN)
 		self.ptxt = self.font.render(f"p: {p:.2E} ({p.mag():.2E})", True, CYAN)
-		self.ltxt = self.font.render(f"L: {L:.2E} ({L.mag():.2E})", True, CYAN)
+		self.ltxt = self.font.render(f"L: {L.mag():.2E}", True, CYAN)
 
 		self.lpos = (24, WINDOW_HEIGHT - self.ltxt.get_height() - 20)
 		self.ppos = (24, self.lpos[1] - self.ptxt.get_height())
