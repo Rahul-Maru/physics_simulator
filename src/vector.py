@@ -188,3 +188,6 @@ class Vector(Vectoid):
 
 	def __pow__(self, k: Number) -> Number:
 		return self.mag()**k
+
+def v0(n: int) -> Vector:
+	return Vector([0 for _ in range(n)])

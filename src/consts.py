@@ -1,7 +1,7 @@
 import pygame as pg
 from math import log10, pi as π
 
-from vector import Vector
+from vector import Vector, v0
 from matrix import Matrix
 
 
@@ -59,10 +59,10 @@ m_e = 5.97219e29 # [M]  mass of earth
 EARTH_IMG = "img/earth.png"
 
 # —initial conditions—
-s0_s = Vector(0, 0) # [L]  sun position
+s0_s = v0(2) # [L]  sun position
 s0_e = Vector(s0_s.x() - 1, s0_s.y()) # [L]  initial position of earth
 
-u_s = Vector(0, 0) # [L][T]¯1  inital velocity of sun
+u_s = v0(2) # [L][T]¯1  inital velocity of sun
 u_e = Vector(0, 29722 * T_SCALE / L_SCALE) # [L][T]¯1  inital velocity of earth
 
 

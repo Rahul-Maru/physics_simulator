@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from consts import MID, pg, Vector, WINDOW_WIDTH, WINDOW_HEIGHT, T_SCALE, DAY, FPS, clock
+from consts import MID, pg, Vector, WINDOW_WIDTH, WINDOW_HEIGHT, T_SCALE, DAY, FPS, clock, v0
 from colors import *
 
 
@@ -13,8 +13,8 @@ class TextEngine():
 		print(RED)
 
 		self.update_zoom(1.00)
-		self.update_center(Vector(0, 0))
-		self.update_momenta(0, Vector(0, 0), Vector(0, 0))
+		self.update_center(v0(2))
+		self.update_momenta(0, v0(2), v0(2))
 
 		self.pausetxt = self.font.render("PAUSED II", True, RED)
 		self.quittxt = self.font.render("QUITTING... (press Esc again)", True, WHITE)

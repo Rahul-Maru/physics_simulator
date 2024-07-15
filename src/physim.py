@@ -8,7 +8,7 @@ from text import text_engine
 
 done = False
 paused = False
-center = Vector(0, 0)
+center = v0(2)
 zoom = 1
 t = 0 # IRL s
 
@@ -72,9 +72,9 @@ plist = []
 Llist = []
 
 def move(particle_list: list[Particle], dt, log) -> None:
-	ΣU = 0 # [M][L]²[T]¯²
-	Σp = Vector(0, 0) # [M][L][T]¯¹
-	ΣL = Vector(0, 0, 0) # [M][L]²[T]¯¹
+	ΣU = 0 # [M][L]²[T]¯² FIXME energy seems to have the form of |sin(t)|
+	Σp = v0(2) # [M][L][T]¯¹
+	ΣL = v0(3) # [M][L]²[T]¯¹
 	if log: print(f"{t=:.2f}s ({t*T_SCALE/DAY:.1f} days)")
 	for p1, p2 in combinations(particle_list, 2):
 		F_net = FORCE(p1, p2)
@@ -111,7 +111,7 @@ def move(particle_list: list[Particle], dt, log) -> None:
 		text_engine.update_momenta(ΣU, Σp, ΣL)
 
 def barycenter(p_list: list[Particle]) -> Vector:
-	s = Vector(0, 0)
+	s = v0(2)
 	M = 0
 	for p in p_list:
 		s += p.m*p.s
@@ -169,7 +169,7 @@ def handle_events(dt) -> None:
 				paused = not paused
 
 			elif event.key == pg.K_c:
-				center = Vector(0, 0)
+				center = v0(2)
 				text_engine.update_center(center)
 
 			elif ((event.key == pg.K_LCTRL or event.key == pg.K_RCTRL) and last_key == pg.K_0) \
