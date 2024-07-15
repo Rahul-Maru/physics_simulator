@@ -22,9 +22,9 @@ class Particle:
 		else:
 			self.v = Vector(u) # [L][T]¯¹
 
-		self.mobile = 1
 		match flags:
-			case "i": self.mobile = 0
+			case "i": self.mobile = False
+			case _: self.mobile = True
 
 		if len(img_src) > 0:
 			self.has_img = True
@@ -33,24 +33,13 @@ class Particle:
 			self.has_img = False
 			self.color = color
 
-	def move(self, F: Vector, dt: float, Ufn: function = None, o: Particle = None) -> None:
-		a = F/self.m # [L][T]¯²
-
-		# calculate energy when s and v are lined up
-		if Ufn:
-			# update the velocity to be on a whole-numbered time step
-			self.v += a*dt/2
-
-			U = Ufn(self, o)
-
-			# update velocity back to half-step to continue leap-frogging
-			self.v += a*dt/2
-		else: 
+	def move(self, F: Vector, dt: float) -> None:
+		# only move the particle if it can move
+		if self.mobile:
+			a = F/self.m # [L][T]¯²
 			self.v += a*dt
+			self.s += self.v*dt
 
-		self.s += self.v*dt * self.mobile
-
-		return U if Ufn else 0 # [M][L][T]¯²
 	
 	def draw(self, screen: pg.Surface, center: Vector, zoom: float) -> None:
 		coords = ((zoom * (RES_MAT@(self.s - center) - self.size*0.5)) + MID).tup()

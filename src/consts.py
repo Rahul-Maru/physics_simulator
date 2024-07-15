@@ -16,7 +16,7 @@ RES = 150 # pixel/unit length
 RES_MAT = Matrix(Vector(RES, 0), Vector(0, -RES))
 FPS = 500 # frames/IRL s (In-Real-Life seconds)  maximum framerate of the simulation
 DAY = 86400 # s/day  unit to display time counter
-LOG_S = 1 # IRL s  how frequently to log the system state
+LOG_S = 0.2 # IRL s  how frequently to log the system state
 
 # unit vectors
 I = Vector(1, 0)
@@ -41,12 +41,11 @@ Fg = lambda p1, p2: G * p1.m * p2.m / (p1.s-p2.s)**2 * (p2.s-p1.s).unit() # [M][
 Fc = lambda p1, p2: K * p1.q * p2.q / (p1.s-p2.s)**2 * (p2.s-p1.s).unit() # [M][L][T]¯²
 FORCE = lambda p1, p2: Fg(p1, p2) + Fc(p1, p2) # [M][L][T]¯² net force
 
-# energy function  [M][L]²[T]¯²
-KE = lambda p: p.m * p.v**2 / 2 # kinetic energy
-GPE = lambda p1, p2: -G * p1.m * p2.m / (p1.s-p2.s).mag() # gravitational potential energy
-EPE = lambda p1, p2: K * p1.q * p2.q / (p1.s-p2.s).mag() # electrostatic potential energy
+# energy functions  [M][L]²[T]¯²
+GPE = lambda p1, p2: -G * p1.m * p2.m / (p1.s-p2.s) # gravitational potential energy
+EPE = lambda p1, p2: -K * p1.q * p2.q / (p1.s-p2.s) # electrostatic potential energy
 PE = lambda p1, p2: GPE(p1, p2) + EPE(p1, p2) # total potential energy
-ENERGY = lambda p1, p2: KE(p1) + PE(p1, p2) # total energy
+KE = lambda p: p.m * p.v**2 / 2 # kinetic energy
 
 # —body properties—
 # sun properties
@@ -67,7 +66,7 @@ u_s = Vector(0, 0) # [L][T]¯1  inital velocity of sun
 u_e = Vector(0, 29722 * T_SCALE / L_SCALE) # [L][T]¯1  inital velocity of earth
 
 
-# pygame setup
+# —pygame setup—
 clock = pg.time.Clock()
 screen = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 bg = pg.transform.scale(pg.image.load("img/stars.png"), (WINDOW_WIDTH, WINDOW_HEIGHT)).convert_alpha()

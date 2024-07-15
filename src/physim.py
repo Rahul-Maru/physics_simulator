@@ -51,7 +51,7 @@ def main() -> None:
 
 	pg.quit()
 
-	print(Vector.c)
+	print(f"{Vector.c} vector objects created")
 	plot((tlist, "t/day"), (Ulist, "Energy"), (plist, "|Linear Momentum|"), (Llist, "|Angular momentum|"))
 
 
@@ -72,18 +72,23 @@ plist = []
 Llist = []
 
 def move(particle_list: list[Particle], dt, log) -> None:
-	ΣU = 0
-	Σp = Vector(0, 0)
-	ΣL = Vector(0, 0, 0)
+	ΣU = 0 # [M][L]²[T]¯²
+	Σp = Vector(0, 0) # [M][L][T]¯¹
+	ΣL = Vector(0, 0, 0) # [M][L]²[T]¯¹
 	if log: print(f"{t=:.2f}s ({t*T_SCALE/DAY:.1f} days)")
 	for p1, p2 in combinations(particle_list, 2):
-		# TODO redo energy calculation for system rather than pairs of bodies
 		F_net = FORCE(p1, p2)
 
 		if log:
-			ΣU += p1.move(F_net, dt, ENERGY, p2) + p2.move(-F_net, dt, ENERGY, p1) # [M][L]²[T]¯²
+			p1.move(F_net, dt)
+			p2.move(-F_net, dt)
+
+			# sum up the potential energies of the pair
+			ΣU += PE(p1, p2)*2 # PE(a→b) = PE(b→a)
+
+			# add momenta to the totals
 			Σp += p1.m*p1.v + p2.m*p2.v
-			ΣL += p1.m*(p1.v*p1.s) + p2.m*(p2.v*p2.s) # [M][L]²[T]¯¹
+			ΣL += p1.m*(p1.v*p1.s) + p2.m*(p2.v*p2.s)
 
 			print(f"{p1.name} ← {p2.name}")
 			print(f"{p1:.3f}")
@@ -96,6 +101,8 @@ def move(particle_list: list[Particle], dt, log) -> None:
 			p2.move(-F_net, dt)
 
 	if log:
+		for p in particle_list:
+			ΣU += KE(p) # add the kinetic energies of the particles
 		Ulist.append(ΣU)
 		plist.append(Σp.mag())
 		Llist.append(ΣL.mag())
