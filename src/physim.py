@@ -52,7 +52,7 @@ def main() -> None:
 	pg.quit()
 
 	print(Vector.c)
-	# plot((tlist, "t/day"), (Ulist, "Energy"), (plist, "|Linear Momentum|"), (Llist, "|Angular momentum|"))
+	plot((tlist, "t/day"), (Ulist, "Energy"), (plist, "|Linear Momentum|"), (Llist, "|Angular momentum|"))
 
 
 def leapfrog_setup(particle_list: list[Particle]) -> None:
