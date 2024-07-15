@@ -119,10 +119,22 @@ class Vector(Vectoid):
 		return self
 
 	def __sub__(self, o: Vector) -> Vector:
-		return self + -o
+		if len(self.comps) != len(o.comps):
+			raise ArithmeticError("Vectors must be of same length to be added or subtracted")
+
+		result = Vector()
+		for comp, ocomp in zip(self.comps, o.comps):
+			result.comps.append(comp - ocomp)
+
+		return result
 
 	def __isub__(self, o: Vector) -> Vector:
-		self += -o
+		if len(self.comps) != len(o.comps):
+			raise ArithmeticError("Vectors must be of same length to be added or subtracted")
+
+		for i, ocomp in enumerate(o.comps):
+			self.comps[i] -= ocomp
+
 		return self
 
 	def __mul__(self, o) -> Vector:

@@ -41,11 +41,12 @@ Fg = lambda p1, p2: G * p1.m * p2.m / (p1.s-p2.s)**2 * (p2.s-p1.s).unit() # [M][
 Fc = lambda p1, p2: K * p1.q * p2.q / (p1.s-p2.s)**2 * (p2.s-p1.s).unit() # [M][L][T]¯²
 FORCE = lambda p1, p2: Fg(p1, p2) + Fc(p1, p2) # [M][L][T]¯² net force
 
-# energy function  [M][L]²[T]¯² TODO redo energy calculation for system rather than pairs of bodies
+# energy function  [M][L]²[T]¯²
 KE = lambda p: p.m * p.v**2 / 2 # kinetic energy
 GPE = lambda p1, p2: -G * p1.m * p2.m / (p1.s-p2.s).mag() # gravitational potential energy
 EPE = lambda p1, p2: K * p1.q * p2.q / (p1.s-p2.s).mag() # electrostatic potential energy
-ENERGY = lambda p1, p2: KE(p1) + GPE(p1, p2) + EPE(p1, p2) # total energy
+PE = lambda p1, p2: GPE(p1, p2) + EPE(p1, p2) # total potential energy
+ENERGY = lambda p1, p2: KE(p1) + PE(p1, p2) # total energy
 
 # —body properties—
 # sun properties

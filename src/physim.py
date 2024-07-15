@@ -1,4 +1,4 @@
-from itertools import permutations
+from itertools import combinations
 
 from particle import Particle
 from plot import plot
@@ -57,11 +57,14 @@ def main() -> None:
 
 def leapfrog_setup(particle_list: list[Particle]) -> None:
 	# setup the half-step intervals required leap-frog integration method
-	for p1, p2 in permutations(particle_list, 2):
-		a0 = (Fg(p1, p2))/p1.m # [L][T]¯²
+	for p1, p2 in combinations(particle_list, 2):
+		F0 = (Fg(p1, p2)) # [M][L][T]¯²
 
-		p1.v += a0/(2*FPS)
+		p1.v += F0/(2*FPS*p1.m)
 		p1.s += p1.v/FPS
+
+		p2.v -= F0/(2*FPS*p2.m)
+		p2.s += p2.v/FPS
 
 tlist = []
 Ulist = []
@@ -72,23 +75,25 @@ def move(particle_list: list[Particle], dt, log) -> None:
 	ΣU = 0
 	Σp = Vector(0, 0)
 	ΣL = Vector(0, 0, 0)
-	if log: print(f"{t=}s ({t*T_SCALE/DAY} days)")
-	for p1, p2 in permutations(particle_list, 2): # TODO replace with combinations
+	if log: print(f"{t=:.2f}s ({t*T_SCALE/DAY:.1f} days)")
+	for p1, p2 in combinations(particle_list, 2):
+		# TODO redo energy calculation for system rather than pairs of bodies
 		F_net = FORCE(p1, p2)
 
 		if log:
-			U = p1.move(F_net, dt, ENERGY, p2) # [M][L]²[T]¯²
-			ΣU += U
-			p = p1.m*p1.v # [M][L][T]¯1
-			Σp += p
-			L = p*p1.s # [M][L]²[T]¯¹
-			ΣL += L
+			ΣU += p1.move(F_net, dt, ENERGY, p2) + p2.move(-F_net, dt, ENERGY, p1) # [M][L]²[T]¯²
+			Σp += p1.m*p1.v + p2.m*p2.v
+			ΣL += p1.m*(p1.v*p1.s) + p2.m*(p2.v*p2.s) # [M][L]²[T]¯¹
 
 			print(f"{p1.name} ← {p2.name}")
 			print(f"{p1:.3f}")
-			print(f"a: {F_net/p1.m:.3f}\nU: {U:.3E} || p: {p:0.3E} ({p.mag():.3E}) || L: {L.mag():.3E}")
+
+			print(f"{p2.name} ← {p1.name}")
+			print(f"{p2:.3f}")
+
 		else: 
 			p1.move(F_net, dt)
+			p2.move(-F_net, dt)
 
 	if log:
 		Ulist.append(ΣU)
