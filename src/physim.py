@@ -1,6 +1,7 @@
 from itertools import permutations
 
 from particle import Particle
+from plot import plot
 from consts import *
 from colors import *
 from text import text_engine
@@ -20,9 +21,9 @@ def main() -> None:
 
 	sun = Particle(m_s, 0, s0_s, u_s, SIZE_S, img_src=SUN_IMG, name="Sun")
 	earth = Particle(m_e, 0, s0_e, u_e, SIZE_E, img_src=EARTH_IMG, name="Earth")
-	p_list = [sun, earth]
+	particle_list = [sun, earth]
 
-	leapfrog_setup(p_list)
+	leapfrog_setup(particle_list)
 
 	while not done:
 		dt = clock.tick_busy_loop(FPS)/1000  # IRL s
@@ -38,27 +39,37 @@ def main() -> None:
 			if t >= secs + LOG_S:
 				secs += LOG_S
 				log = True
+				tlist.append(t*T_SCALE/DAY)
 
-			move(p_list, dt, log)
+			move(particle_list, dt, log)
 
 			log = False
 
-		draw(screen, p_list, t)
+		draw(screen, particle_list, t)
+
+	pg.quit()
+
+	plot((tlist, "t/day"), (Ulist, "Energy"), (plist, "|Linear Momentum|"), (Llist, "|Angular momentum|"))
 
 
-def leapfrog_setup(p_list: list[Particle]) -> None:
+def leapfrog_setup(particle_list: list[Particle]) -> None:
 	# setup the half-step intervals required leap-frog integration method
-	for p1, p2 in permutations(p_list, 2):
+	for p1, p2 in permutations(particle_list, 2):
 		a0 = (Fg(p1, p2))/p1.m # [L][T]¯²
 
 		p1.v += a0/(2*FPS)
 		p1.s += p1.v/FPS
 
-def move(p_list: list[Particle], dt, log) -> None:
+tlist = []
+Ulist = []
+plist = []
+Llist = []
+
+def move(particle_list: list[Particle], dt, log) -> None:
 	ΣU = 0
 	Σp = Vector(0, 0)
-	ΣL = Vector(0, 0)
-	for p1, p2 in permutations(p_list, 2):
+	ΣL = Vector(0, 0, 0)
+	for p1, p2 in permutations(particle_list, 2):
 		F_net = Fg(p1, p2)
 
 		if log:
@@ -66,7 +77,7 @@ def move(p_list: list[Particle], dt, log) -> None:
 			ΣU += U
 			p = p1.m*p1.v # [M][L][T]¯1
 			Σp += p
-			L = p1.m*p1.v*(p1.s-p2.s).mag() # [M][L]²[T]¯¹
+			L = p.cross(p1.s) # [M][L]²[T]¯¹
 			ΣL += L
 
 			print(f"{p1.name} ← {p2.name}")
@@ -77,6 +88,10 @@ def move(p_list: list[Particle], dt, log) -> None:
 			p1.move(F_net, dt)
 
 	if log:
+		Ulist.append(ΣU)
+		plist.append(Σp.mag())
+		Llist.append(ΣL.mag())
+
 		print(f"ΣU: {ΣU:0.3E} || Σp: {Σp:0.3E} ({Σp.mag():.3E}) || ΣL: {ΣL:0.3E} ({ΣL.mag():.3E})\n")
 		text_engine.update_momenta(ΣU, Σp, ΣL)
 
@@ -106,7 +121,8 @@ def draw(screen: pg.Surface, objs: list[Particle], t) -> None:
 	for obj in objs:
 		obj.draw(screen, center, zoom)
 
-	pg.draw.circle(screen, LIME, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4)
+	# center of mass TODO find a better color
+	pg.draw.circle(screen, LIME, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4*zoom)
 
 	text_engine.render(screen, t, paused)
 
@@ -150,11 +166,11 @@ def handle_events(dt) -> None:
 				text_engine.update_zoom(zoom)
 
 			elif event.key == pg.K_EQUALS or event.key == pg.K_PLUS or event.key == pg.K_KP_PLUS:
-				zoom *= 1.1
+				zoom = min(30.912681, zoom*1.1)
 				text_engine.update_zoom(zoom)
 
 			elif event.key == pg.K_MINUS or event.key == pg.K_KP_MINUS:
-				zoom *= 0.9090909091
+				zoom = max(0.032349184, zoom/1.1)
 				text_engine.update_zoom(zoom)
 
 			else:
