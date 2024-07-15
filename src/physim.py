@@ -127,7 +127,7 @@ def draw(screen: pg.Surface, objs: list[Particle]) -> None:
 			  (WINDOW_WIDTH, MID.y() + center.y()*RES*zoom)) # x-axis
 	pg.draw.line(screen, D_GRAY, \
 			  (MID.x() - center.x()*RES*zoom, 0), \
-			  (MID.y() - center.x()*RES*zoom, WINDOW_HEIGHT)) # y-axis
+			  (MID.x() - center.x()*RES*zoom, WINDOW_HEIGHT)) # y-axis
 
 
 	# render all objects

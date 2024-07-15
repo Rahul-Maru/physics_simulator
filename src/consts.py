@@ -7,7 +7,6 @@ from matrix import Matrix
 
 # —simulation properties—
 # simulator dimensions
-# BUG display stops working properly when w≠h
 WINDOW_WIDTH = 700 # pixels
 WINDOW_HEIGHT = 700 # pixels
 MID = Vector(WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2) # pixels
