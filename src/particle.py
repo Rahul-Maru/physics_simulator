@@ -42,13 +42,16 @@ class Particle:
 
 	
 	def draw(self, screen: pg.Surface, center: Vector, zoom: float) -> None:
-		coords = ((zoom * (RES_MAT@(self.s - center) - self.size*0.5)) + MID).tup()
+		coords = ((zoom * (RES_MAT@(self.s - center) - self.size/2)) + MID).tup()
 		size = (zoom*self.size).tup()
 
-		if self.has_img:
-			screen.blit(pg.transform.scale(self.img, size), coords)
-		else:
-			pg.draw.rect(screen, self.color, pg.Rect(*coords, *size))
+		# only render the particle if it is visible
+		if -size[0] < coords[0] < WINDOW_WIDTH and -size[1] < coords[1] < WINDOW_HEIGHT:
+			print(f"Drew {self.name}!")
+			if self.has_img:
+				screen.blit(pg.transform.scale(self.img, size), coords)
+			else:
+				pg.draw.rect(screen, self.color, pg.Rect(*coords, *size))
 
 
 	def __str__(self) -> str:
