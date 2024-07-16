@@ -155,7 +155,7 @@ def draw(screen: pg.Surface, objs: list[Particle]) -> None:
 		obj.draw(screen, center, zoom)
 
 	if show_barycenter:
-		pg.draw.circle(screen, MAROON, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4*zoom)
+		pg.draw.circle(screen, D_RED, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4*zoom)
 
 	text_engine.draw(screen, t, paused)
 
