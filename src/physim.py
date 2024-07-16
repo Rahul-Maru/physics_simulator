@@ -77,11 +77,12 @@ Llist = []
 
 def move(particle_list: list[Particle], dt, log) -> None:
 	ΣU = 0 # [M][L]²[T]¯²
-	ΣKE = 0
+	ΣKE = 0 # [M][L]²[T]¯²
 	Σp = v0(2) # [M][L][T]¯¹
 	ΣL = v0(3) # [M][L]²[T]¯¹
-	if log: print(f"{t=:.2f}s ({t*T_SCALE/DAY:.1f} days)")
+	if log: print(f"{t=:.2f}s ({t*T_SCALE/DAY:.0f} days)")
 	for p1, p2 in combinations(particle_list, 2):
+		# F(a→b) = -F(b→a) so we only need to calculate one force
 		F_net = FORCE(p1, p2)
 
 		if log:
@@ -118,6 +119,7 @@ def move(particle_list: list[Particle], dt, log) -> None:
 		text_engine.update_momenta(ΣE, Σp, ΣL)
 
 def barycenter(particle_list: list[Particle]) -> Vector:
+	"""Calculates the barycenter (center of mass) of the system"""
 	s = v0(2)
 	M = 0
 	for p in particle_list:

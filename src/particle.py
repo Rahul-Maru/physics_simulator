@@ -47,7 +47,6 @@ class Particle:
 
 		# only render the particle if it is visible
 		if -size[0] < coords[0] < WINDOW_WIDTH and -size[1] < coords[1] < WINDOW_HEIGHT:
-			print(f"Drew {self.name}!")
 			if self.has_img:
 				screen.blit(pg.transform.scale(self.img, size), coords)
 			else:
