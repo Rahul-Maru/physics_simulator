@@ -1,10 +1,16 @@
+"""
+——— PHYSICS SIMULATOR (will come up with a good name later) ———
+A program to simulate the n-body problem.
+"""
+
 from itertools import combinations
 
 from src.particle import Particle
 from src.plot import plot
+from src.text import text_engine
 from src.consts import *
 from src.colors import *
-from src.text import text_engine
+from src.vector import I, J
 
 done = False
 paused = False
@@ -58,7 +64,7 @@ def main() -> None:
 
 
 def leapfrog_setup(particle_list: list[Particle]) -> None:
-	# setup the half-step intervals required leap-frog integration method
+	"""setup the half-step intervals for velocity required leap-frog integration method."""
 	for p1, p2 in combinations(particle_list, 2):
 		F0 = (Fg(p1, p2)) # [M][L][T]¯²
 
@@ -76,6 +82,7 @@ plist = []
 Llist = []
 
 def move(particle_list: list[Particle], dt, log) -> None:
+	"""Moves all the bodies in the system over one timestep."""
 	ΣU = 0 # [M][L]²[T]¯²
 	ΣKE = 0 # [M][L]²[T]¯²
 	Σp = v0(2) # [M][L][T]¯¹
@@ -119,7 +126,7 @@ def move(particle_list: list[Particle], dt, log) -> None:
 		text_engine.update_momenta(ΣE, Σp, ΣL)
 
 def barycenter(particle_list: list[Particle]) -> Vector:
-	"""Calculates the barycenter (center of mass) of the system"""
+	"""Calculates the barycenter (center of mass) of the system of particles."""
 	s = v0(2)
 	M = 0
 	for p in particle_list:
@@ -129,6 +136,7 @@ def barycenter(particle_list: list[Particle]) -> Vector:
 
 
 def draw(screen: pg.Surface, objs: list[Particle]) -> None:
+	"""Draws objects, text, etc on the screen."""
 	screen.blit(bg, (0, 0))
 
 	pg.draw.line(screen, D_GRAY, \
@@ -145,7 +153,7 @@ def draw(screen: pg.Surface, objs: list[Particle]) -> None:
 
 	pg.draw.circle(screen, MAROON, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4*zoom)
 
-	text_engine.render(screen, t, paused)
+	text_engine.draw(screen, t, paused)
 
 	# crosshair
 	pg.draw.line(screen, GRAY, (MID.x() - 10, MID.y()), (MID.x() + 10, MID.y()))
@@ -157,6 +165,7 @@ last_key = None
 last_key_time = 0
 
 def handle_events(dt) -> None:
+	"""Handles keyboard and other events."""
 	global done, paused, center, zoom, last_key, last_key_time
 
 	if last_key:

@@ -1,3 +1,7 @@
+"""
+Module to handle text rendering.
+"""
+
 from __future__ import annotations
 
 from src.consts import MID, pg, Vector, WINDOW_WIDTH, WINDOW_HEIGHT, T_SCALE, DAY, FPS, clock, v0
@@ -5,10 +9,12 @@ from src.colors import *
 
 
 class TextEngine():
+	"""Class that stores, formats, and renders text."""
 	def __init__(self) -> None:
 		self.last_key = None
 
 	def init_font(self) -> None:
+		"""Initializes and stores the font and the text. (MUST BE RUN AFTER pg.init())"""
 		self.font = pg.font.SysFont(None, 16)
 		print(RED)
 
@@ -26,15 +32,18 @@ class TextEngine():
 
 
 	def update_zoom(self, zoom: float) -> None:
+		"""Updates the value of the zoom in the display text."""
 		self.ztxt = self.font.render(f"zoom: {zoom:.2f}x", True, ORANGE)
 		self.zpos = (WINDOW_WIDTH - self.ztxt.get_width() - 24, WINDOW_HEIGHT - self.ztxt.get_height() - 20)
 
 	def update_center(self, center: Vector):
+		"""Updates the value of the FOV center in the display text."""
 		self.ctxt = self.font.render(f"{center:.2f}", True, ORANGE)
 		self.cpos = (WINDOW_WIDTH - self.ctxt.get_width() - 24, self.zpos[1] - self.ctxt.get_height())
 
-	def update_momenta(self, U: float, p: Vector, L: Vector) -> None:
-		self.etxt = self.font.render(f"U: {U:.2E}", True, CYAN)
+	def update_momenta(self, E: float, p: Vector, L: Vector) -> None:
+		"""Updates the values of the energy, linear and angular momenta in the display text."""
+		self.etxt = self.font.render(f"E: {E:.2E}", True, CYAN)
 		self.ptxt = self.font.render(f"p: {p:.2E} ({p.mag():.2E})", True, CYAN)
 		self.ltxt = self.font.render(f"L: {L.mag():.2E}", True, CYAN)
 
@@ -42,14 +51,28 @@ class TextEngine():
 		self.ppos = (24, self.lpos[1] - self.ptxt.get_height())
 		self.epos = (24, self.ppos[1] - self.etxt.get_height())
 
-	def render(self, screen: pg.Surface, t: float, pause: bool) -> None:
+	def draw(self, screen: pg.Surface, t: float, paused: bool) -> None:
+		"""
+		Renders all the text onto the screen.
+
+		Parameters
+		----------
+			screen : Pygame.Surface
+				The surface to render the text on.
+			t : float
+				The current simulation time.
+			paused : bool
+				Whether the simulation is paused or not.
+
+		"""
+
 		# display the current simulation time
 		ttxt = self.font.render(f"t = {t*T_SCALE/DAY:.0f} days", True, MAGENTA)
 
 		if self.last_key == pg.K_ESCAPE:
 			screen.blit(self.quittxt, self.FPSpos)
 		else:
-			if pause:
+			if paused:
 				screen.blit(self.pausetxt, self.FPSpos)
 			else:
 				# display the current fps
@@ -59,12 +82,16 @@ class TextEngine():
 
 		screen.blit(ttxt, (WINDOW_WIDTH - ttxt.get_width() - 24, 20))
 
-		# display the current center of viewpoint and zoom
+		# display the current center of FOV and zoom
 		screen.blit(self.ctxt, self.cpos)
 		screen.blit(self.ztxt, self.zpos)
+
+		# display the energy, linear and angular momentum
 		screen.blit(self.etxt, self.epos)
 		screen.blit(self.ptxt, self.ppos)
 		screen.blit(self.ltxt, self.lpos)
+
+		# display the keyboard shortcut tutorial
 		screen.blit(self.tutorial, (24, MID.x()-100))
 
 
@@ -147,10 +174,12 @@ class TextEngine():
 
 class TextRectException(BaseException):
 	# code from: https://pygame.org/pcr/text_rect/index.php
-    def __init__(self, message = None):
-        self.message = message
-    def __str__(self):
-        return self.message
+	"""Exception class to be used with TextEngine.render_textrect()"""
+
+	def __init__(self, message = None):
+		self.message = message
+	def __str__(self):
+		return self.message
 
 # text enginge
 text_engine = TextEngine()

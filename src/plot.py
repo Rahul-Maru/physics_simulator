@@ -1,4 +1,4 @@
-import vpython as vp
+# import vpython as vp
 import numpy as np
 from matplotlib import pyplot as plt
 from math import sqrt, cos
@@ -63,23 +63,49 @@ def main():
 	plt.xlabel("t/s")
 	plt.show()
 
-def plot(xlist, *ylists):
+def plot(xdata: tuple, *ydatalist) -> None:
+	"""
+	Plots the given data. Takes in one set of x data (independent variable)
+	and multiple sets of y data (dependent variables) and plots line graphs.
+
+	Parameters
+	----------
+		xdata : tuple [(data, label)]
+			data : list
+				A list of the x components of the data points to be plotted.
+			label : str
+				The label for the x-axis.
+		*ydatalist : tuple [(data, legend, style)]
+			data : list
+				A list of the y components of the data points to be plotted.
+			legend : str
+				The label for this set of data on the legend.
+			style : Iterable
+				The style to apply on the plot (optional).
+	"""
+
+	# plots the line y = 0
 	plt.axhline(0, 0, tf, color = "grey", linestyle="dashed")
 
-	xdata = xlist[0]
+	xlist = xdata[0]
 
+	# list containing the text for the legend
 	legend = ["0"]
-	for ylist in ylists:
-		if len(ylist) == 1:
-			plt.plot(xdata, ylist[0])
-		elif len(ylist) == 2:
-			plt.plot(xdata, ylist[0])
-			legend.append(ylist[1])
+	for ydata in ydatalist:
+		if len(ydata) == 1:
+			# plot the data
+			plt.plot(xlist, ydata[0])
+			legend.append("")
+		elif len(ydata) == 2:
+			# plot the data and put text in the legend
+			plt.plot(xlist, ydata[0])
+			legend.append(ydata[1])
 		else:
-			plt.plot(xdata, ylist[0], *ylist[2])
-			legend.append(ylist[1])
+			# plot the data with a certain style
+			plt.plot(xlist, ydata[0], *ydata[2])
+			legend.append(ydata[1])
 
-	plt.xlabel(xlist[1])
+	plt.xlabel(xdata[1])
 	plt.legend(legend)
 
 	plt.show()

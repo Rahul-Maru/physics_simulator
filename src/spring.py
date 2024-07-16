@@ -1,32 +1,74 @@
-from numbers import Number
-from consts import pg, RES, WIDTH, s0
+"""Module for the spring class."""
 
-from vector import Vector
+from numbers import Number
+from consts import pg, RES
+
+from vector import Vector, J
 
 class Spring:
-	def __init__(self, k: Number, base_pos: Vector, sr: Vector, width: Number = WIDTH, img_src: str = "img/spring.png") -> None:
-		self.img = pg.image.load(img_src)
+	"""
+	A class for creating Spring objects.
 
-		self.k = k # spring constant
+	Attributes
+	----------
+		k : Number
+			The spring's spring constant.
+		fixed_pos : Vector
+			The position of the spring's base/fixed point.
+		sr : Vector
+			The rest point of the spring's mobile end.
+		s : Vector
+			The current position of mobile end of spring.
+		img : Pygame.Surface
+			The sprite of the spring.
+		w : Number
+			The width of the spring.
+	"""
 
-		self.fixed_pos = base_pos # fixed point of the spring
-		self.w = width # width of spring
+	def __init__(self, k: Number, base_pos: Vector, sr: Vector, width: Number = 1, img_src: str = "img/spring.png") -> None:
+		"""
+		Creates a spring object.
 
-		self.sr = sr # rest point of mobile end of spring
-		self.s = s0 # current position of mobile end of spring
+		Parameters
+		----------
+			k : Number
+				The spring's spring constant.
+			base_pos : Vector
+				The position of the spring's base/fixed point.
+			sr : Vector
+				The rest point of the spring's mobile end.
+			width : Number
+				The width of the spring.
+				Default is 1.
+			img_src : str
+				The path to the sprite of the spring.
+		"""
+
+		self.img = pg.image.load(img_src).convert_alpha()
+
+		self.k = k
+
+		self.fixed_pos = base_pos
+		self.w = width
+
+		self.sr = sr
+		self.s = J
 	
 	def F(self, s: Vector) -> Vector:
+		"""The spring's restorative force."""
+
 		return -self.k*(s-self.sr)
 	
 	def energy(self, s) -> Number:
+		"""The energy stored in the spring."""
+
 		return self.k*(s - self.sr)**2/2
 	
 	def draw(self, screen: pg.Surface) -> None:
+		"""Draws the spring, and the spring's equillibrium point to the screen."""
+
 		# spring image
-		screen.blit(pg.transform.scale(self.img, (RES, max(-self.s.comps[1], 0)*RES)), tuple((self.fixed_pos*RES).comps))
+		screen.blit(pg.transform.scale(self.img, RES@Vector(1, min(self.s.y(), 0))), (RES@self.fixed_pos).tup())
 		
 		# equillibrium line
-		pg.draw.line(screen, (200, 200, 200), (1.5*RES, -self.sr.y()*RES), (3.5*RES, - self.sr.y()*RES))
-
-
-
+		pg.draw.line(screen, (200, 200, 200), RES@Vector(1.5, self.sr.y()), RES@Vector(3.5, self.sr.y()))

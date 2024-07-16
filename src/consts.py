@@ -1,3 +1,7 @@
+"""
+File to store imports, constants, formulae, and initial parameters.
+"""
+
 import pygame as pg
 from math import log10, pi as π
 
@@ -17,10 +21,6 @@ FPS = 500 # frames/IRL s (In-Real-Life seconds)  maximum framerate of the simula
 DAY = 86400 # s/day  unit to display time counter
 LOG_S = 0.2 # IRL s  how frequently to log the system state
 
-# unit vectors
-I = Vector(1, 0)
-J = Vector(0, 1)
-
 # unit scale factors
 L_SCALE = 149597870700 # m/unit length || 1 AU
 T_SCALE = 86400*50 # s/unit time || n Days w. n=50
@@ -31,8 +31,8 @@ A_SCALE = 2.3148148e-7 # A/unit current || 1 C/n days
 # Newton's Gravitational Constant
 G = 6.6743e-11 * T_SCALE**2 / L_SCALE**3 # [M]¯¹[L]³[T]¯²
 # Permittivity of free space / Epsilon naught
-ε0 = 8.8541878128e-12 * L_SCALE**3 / T_SCALE**4 / A_SCALE**2 # [M]¯¹[L]¯³[T]⁴[A]²
-K = 1/(4*π*ε0) # [M][L]³[T]¯⁴[A]¯²  Coulomb's constant
+ε0 = 8.8541878128e-12 * L_SCALE**3 / T_SCALE**4 / A_SCALE**2 # [M]¯¹[L]¯³[T]⁴[I]²
+K = 1/(4*π*ε0) # [M][L]³[T]¯⁴[I]¯²  Coulomb's constant
 
 # force of gravity
 Fg = lambda p1, p2: G * p1.m * p2.m / (p1.s-p2.s)**2 * (p2.s-p1.s).unit() # [M][L][T]¯²
