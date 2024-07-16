@@ -27,7 +27,7 @@ class TextEngine():
 		self.FPSpos = (24, 20)
 
 		tutorialtxt = "\n Esc ×2 — quit\n Space — pause\n Arrows — scroll\n C — center at origin\n" + \
-			" B — show / hide center of mass\n Ctrl + b — center FOV at center of mass\n +/= — zoom in\n - — zoom out\n Ctrl + 0 — reset zoom"
+			" B — show / hide center of mass\n Ctrl + B — center FOV at center of mass\n +/= — zoom in\n - — zoom out\n Ctrl + 0 — reset zoom"
 		self.tutorial = TextEngine.render_textrect(tutorialtxt, self.font, pg.Rect(0, 0, 154, 136), WHITE, BLACK)
 
 

@@ -21,7 +21,7 @@ class Particle:
 		v : Vector
 			Velocity of the particle (in simulation coordinates).
 		size : Vector
-			Size of the particle (in pygame coordinates).
+			Size of the particle.
 		name : str
 			What the particle will be reffered to as in log messages.
 		has_img : bool
@@ -66,7 +66,7 @@ class Particle:
 
 		self.m = m # [M]  mass
 		self.q = q # [T][I]  charge
-		self.size = Vector(size)*RES # [L]
+		self.size = Vector(size) * RES # [L]
 		self.name = name
 
 		self.s = s # [L]
@@ -110,7 +110,7 @@ class Particle:
 		"""
 
 		# adjust position and size to pygame coordinates, and convert to tuples
-		coords = ((zoom * (RES_MAT@(self.s - center) - self.size/2)) + MID).tup()
+		coords = scale_coords(self.s, zoom, center, self.size)
 		size = (zoom*self.size).tup()
 
 		# only render the particle if it is visible
