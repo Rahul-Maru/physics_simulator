@@ -14,7 +14,8 @@ from src.vector import I, J
 
 done = False
 paused = False
-center = v0(2)
+show_barycenter = False
+center = v0(2) # The center of the Field of Vision (FOV)
 zoom = 1
 t = 0 # IRL s
 
@@ -22,6 +23,8 @@ particle_list = []
 
 
 def main() -> None:
+	"""Run the simulation."""
+
 	global t, particle_list
 	pg.init()
 	text_engine.init_font()
@@ -64,7 +67,7 @@ def main() -> None:
 
 
 def leapfrog_setup(particle_list: list[Particle]) -> None:
-	"""setup the half-step intervals for velocity required leap-frog integration method."""
+	"""Setup the half-step intervals for velocity required leap-frog integration method."""
 	for p1, p2 in combinations(particle_list, 2):
 		F0 = (Fg(p1, p2)) # [M][L][T]¯²
 
@@ -82,7 +85,7 @@ plist = []
 Llist = []
 
 def move(particle_list: list[Particle], dt, log) -> None:
-	"""Moves all the bodies in the system over one timestep."""
+	"""Move all the bodies in the system over one timestep."""
 	ΣU = 0 # [M][L]²[T]¯²
 	ΣKE = 0 # [M][L]²[T]¯²
 	Σp = v0(2) # [M][L][T]¯¹
@@ -151,7 +154,8 @@ def draw(screen: pg.Surface, objs: list[Particle]) -> None:
 	for obj in objs:
 		obj.draw(screen, center, zoom)
 
-	pg.draw.circle(screen, MAROON, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4*zoom)
+	if show_barycenter:
+		pg.draw.circle(screen, MAROON, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4*zoom)
 
 	text_engine.draw(screen, t, paused)
 
@@ -166,7 +170,7 @@ last_key_time = 0
 
 def handle_events(dt) -> None:
 	"""Handles keyboard and other events."""
-	global done, paused, center, zoom, last_key, last_key_time
+	global done, paused, center, zoom, show_barycenter, last_key, last_key_time
 
 	if last_key:
 		last_key_time += dt
@@ -187,9 +191,13 @@ def handle_events(dt) -> None:
 			elif event.key == pg.K_SPACE:
 				paused = not paused
 
+			elif event.key == pg.K_b:
+				show_barycenter = not show_barycenter
+
 			elif event.key == pg.K_c:
 				center = v0(2)
 				text_engine.update_center(center)
+
 			elif is_ctrl and event.key == pg.K_b:
 				center = barycenter(particle_list)
 				text_engine.update_center(center)
