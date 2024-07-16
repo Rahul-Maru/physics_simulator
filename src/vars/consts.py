@@ -5,8 +5,8 @@ File to store imports, constants, formulae, and initial parameters.
 import pygame as pg
 from math import log10, pi as π
 
-from src.vector import Vector, v0
-from src.matrix import Matrix
+from src.utils.vector import Vector, v0
+from src.utils.matrix import Matrix
 
 
 # —simulation properties—

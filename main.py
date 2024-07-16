@@ -5,12 +5,12 @@ A program to simulate the n-body problem.
 
 from itertools import combinations
 
-from src.particle import Particle
-from src.plot import plot
-from src.text import text_engine
-from src.consts import *
-from src.colors import *
-from src.vector import I, J
+from src.objs.particle import Particle
+from src.utils.plot import plot
+from src.utils.text import text_engine
+from src.vars.consts import *
+from src.vars.colors import *
+from src.utils.vector import I, J
 
 done = False
 paused = False

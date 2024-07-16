@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 from numbers import Number
-from utils.consts import *
-from utils.colors import LIME
+from src.vars.consts import *
+from src.vars.colors import LIME
 
 class Particle:
 	"""

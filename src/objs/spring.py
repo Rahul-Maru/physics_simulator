@@ -1,9 +1,9 @@
 """Module for the spring class."""
 
 from numbers import Number
-from utils.consts import pg, RES
 
-from utils.vector import Vector, J
+from src.vars.consts import pg, RES
+from src.utils.vector import Vector, J
 
 class Spring:
 	"""

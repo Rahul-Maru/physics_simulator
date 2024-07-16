@@ -4,8 +4,8 @@ Module to handle text rendering.
 
 from __future__ import annotations
 
-from utils.consts import MID, pg, Vector, WINDOW_WIDTH, WINDOW_HEIGHT, T_SCALE, DAY, FPS, clock, v0
-from utils.colors import *
+from src.vars.consts import MID, pg, Vector, WINDOW_WIDTH, WINDOW_HEIGHT, T_SCALE, DAY, FPS, clock, v0
+from src.vars.colors import *
 
 
 class TextEngine():
