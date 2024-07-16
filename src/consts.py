@@ -1,8 +1,8 @@
 import pygame as pg
 from math import log10, pi as π
 
-from vector import Vector, v0
-from matrix import Matrix
+from src.vector import Vector, v0
+from src.matrix import Matrix
 
 
 # —simulation properties—

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from consts import MID, pg, Vector, WINDOW_WIDTH, WINDOW_HEIGHT, T_SCALE, DAY, FPS, clock, v0
-from colors import *
+from src.consts import MID, pg, Vector, WINDOW_WIDTH, WINDOW_HEIGHT, T_SCALE, DAY, FPS, clock, v0
+from src.colors import *
 
 
 class TextEngine():

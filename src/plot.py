@@ -1,8 +1,7 @@
 import vpython as vp
 import numpy as np
 from matplotlib import pyplot as plt
-import math
-from math import pi, e, sqrt, sin, cos, tan
+from math import sqrt, cos
 
 k = 0.5
 m = 1

@@ -1,10 +1,10 @@
 from itertools import combinations
 
-from particle import Particle
-from plot import plot
-from consts import *
-from colors import *
-from text import text_engine
+from src.particle import Particle
+from src.plot import plot
+from src.consts import *
+from src.colors import *
+from src.text import text_engine
 
 done = False
 paused = False
