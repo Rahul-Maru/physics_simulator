@@ -128,6 +128,7 @@ def move(particle_list: list[Particle], dt, log) -> None:
 		print(f"ΣE: {ΣE:0.3E} || Σp: {Σp:0.3E} ({Σp.mag():.3E}) || ΣL: {ΣL.mag():.3E}\n")
 		text_engine.update_momenta(ΣE, Σp, ΣL)
 
+
 def barycenter(particle_list: list[Particle]) -> Vector:
 	"""Calculates the barycenter (center of mass) of the system of particles."""
 	s = v0(2)
@@ -136,34 +137,6 @@ def barycenter(particle_list: list[Particle]) -> Vector:
 		s += p.m*p.s
 		M += p.m
 	return s/M
-
-
-def draw(screen: pg.Surface, objs: list[Particle]) -> None:
-	"""Draws objects, text, etc on the screen."""
-	screen.blit(bg, (0, 0))
-
-	pg.draw.line(screen, D_GRAY, \
-			  (0, MID.y() + center.y()*RES*zoom), \
-			  (WINDOW_WIDTH, MID.y() + center.y()*RES*zoom)) # x-axis
-	pg.draw.line(screen, D_GRAY, \
-			  (MID.x() - center.x()*RES*zoom, 0), \
-			  (MID.x() - center.x()*RES*zoom, WINDOW_HEIGHT)) # y-axis
-
-
-	# render all objects
-	for obj in objs:
-		obj.draw(screen, center, zoom)
-
-	if show_barycenter:
-		pg.draw.circle(screen, D_RED, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4*zoom)
-
-	text_engine.draw(screen, t, paused)
-
-	# crosshair
-	pg.draw.line(screen, GRAY, (MID.x() - 10, MID.y()), (MID.x() + 10, MID.y()))
-	pg.draw.line(screen, GRAY, (MID.x(), MID.y() - 10), (MID.x(), MID.y() + 10))
-
-	pg.display.flip()
 
 last_key = None
 last_key_time = 0
@@ -184,39 +157,41 @@ def handle_events(dt) -> None:
 			done = True
 
 		elif event.type == pg.KEYDOWN:
-			is_ctrl = last_key == pg.K_LCTRL or last_key == pg.K_RCTRL
-			if event.key == pg.K_ESCAPE and last_key == pg.K_ESCAPE:
-				done = True
+			if last_key == pg.K_LCTRL or last_key == pg.K_RCTRL:
+				if event.key == pg.K_b:
+					center = barycenter(particle_list)
+					text_engine.update_center(center)
 
-			elif event.key == pg.K_SPACE:
-				paused = not paused
-
-			elif event.key == pg.K_b:
-				show_barycenter = not show_barycenter
-
-			elif event.key == pg.K_c:
-				center = v0(2)
-				text_engine.update_center(center)
-
-			elif is_ctrl and event.key == pg.K_b:
-				center = barycenter(particle_list)
-				text_engine.update_center(center)
-
-			elif is_ctrl and event.key == pg.K_0:
-				zoom = 1
-				text_engine.update_zoom(zoom)
-
-			elif event.key == pg.K_EQUALS or event.key == pg.K_PLUS or event.key == pg.K_KP_PLUS:
-				zoom = min(30.912681, zoom*1.1)
-				text_engine.update_zoom(zoom)
-
-			elif event.key == pg.K_MINUS or event.key == pg.K_KP_MINUS:
-				zoom = max(0.032349184, zoom/1.1)
-				text_engine.update_zoom(zoom)
+				elif event.key == pg.K_0:
+					zoom = 1
+					text_engine.update_zoom(zoom)
 
 			else:
-				last_key = event.key
-				text_engine.last_key = last_key
+				if event.key == pg.K_ESCAPE and last_key == pg.K_ESCAPE:
+					done = True
+
+				elif event.key == pg.K_SPACE:
+					paused = not paused
+
+				elif event.key == pg.K_b:
+					show_barycenter = not show_barycenter
+
+				elif event.key == pg.K_c:
+					center = v0(2)
+					text_engine.update_center(center)
+
+				elif event.key == pg.K_EQUALS or event.key == pg.K_PLUS or event.key == pg.K_KP_PLUS:
+					zoom = min(30.912681, zoom*1.1)
+					text_engine.update_zoom(zoom)
+
+				elif event.key == pg.K_MINUS or event.key == pg.K_KP_MINUS:
+					zoom = max(0.032349184, zoom/1.1)
+					text_engine.update_zoom(zoom)
+
+				else:
+					last_key = event.key
+					text_engine.last_key = last_key
+
 
 	keys = pg.key.get_pressed()
 	if keys[pg.K_UP]:
@@ -234,6 +209,37 @@ def handle_events(dt) -> None:
 	if keys[pg.K_LEFT]:
 		center -= I*dt/zoom
 		text_engine.update_center(center)
+
+
+def draw(screen: pg.Surface, objs: list[Particle]) -> None:
+	"""Draws objects, text, etc on the screen."""
+	screen.blit(bg, (0, 0))
+
+	pg.draw.line(screen, D_GRAY, \
+			  (0, MID.y() + center.y()*RES*zoom), \
+			  (WINDOW_WIDTH, MID.y() + center.y()*RES*zoom)) # x-axis
+	pg.draw.line(screen, D_GRAY, \
+			  (MID.x() - center.x()*RES*zoom, 0), \
+			  (MID.x() - center.x()*RES*zoom, WINDOW_HEIGHT)) # y-axis
+
+
+	# render all objects
+	for obj in objs:
+		obj.draw(screen, center, zoom)
+
+	if show_barycenter:
+		b = scale_coords(barycenter(particle_list), zoom, center)
+		pg.draw.circle(screen, D_RED, b, 4*zoom)
+		for p in particle_list:
+			pg.draw.line(screen, YELLOW, scale_coords(p.s, zoom, center), b, 1)
+
+	text_engine.draw(screen, t, paused)
+
+	# crosshair
+	pg.draw.line(screen, GRAY, (MID.x() - 10, MID.y()), (MID.x() + 10, MID.y()))
+	pg.draw.line(screen, GRAY, (MID.x(), MID.y() - 10), (MID.x(), MID.y() + 10))
+
+	pg.display.flip()
 
 
 if __name__ == "__main__":

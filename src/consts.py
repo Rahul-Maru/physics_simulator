@@ -69,3 +69,6 @@ u_e = Vector(0, 29722 * T_SCALE / L_SCALE) # [L][T]¯1  inital velocity of earth
 clock = pg.time.Clock()
 screen = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 bg = pg.transform.scale(pg.image.load("img/stars.png"), (WINDOW_WIDTH, WINDOW_HEIGHT)).convert_alpha()
+
+def scale_coords(coords, zoom, center, size=v0(2)):
+	return (zoom*(RES_MAT@(coords - center) - size/2) + MID).tup()
