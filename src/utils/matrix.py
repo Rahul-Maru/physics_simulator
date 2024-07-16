@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from numbers import Number
 
-from src.vector import Vectoid, Vector, I, J
+from utils.vector import Vectoid, Vector, I, J
 
 
 class Matrix(Vectoid):
