@@ -16,7 +16,6 @@ class TextEngine():
 	def init_font(self) -> None:
 		"""Initializes and stores the font and the text. (MUST BE RUN AFTER pg.init())"""
 		self.font = pg.font.SysFont(None, 16)
-		print(RED)
 
 		self.update_zoom(1.00)
 		self.update_center(v0(2))

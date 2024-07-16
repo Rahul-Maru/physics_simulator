@@ -50,19 +50,26 @@ KE = lambda p: p.m * p.v**2 / 2 # kinetic energy
 # sun properties
 SIZE_S = (0.56, 0.56) # [L]
 m_s = 1.9891e30 # [M]  mass of sun
-SUN_IMG = "img/sun.png"
+SUN_IMG = "img/meme/monkey.png"
 
 # earth properties
 SIZE_E = (0.12, 0.12) # [L]
 m_e = 5.97219e29 # [M]  mass of earth
-EARTH_IMG = "img/earth.png"
+EARTH_IMG = "img/meme/dg.png"
+
+# moon properties
+SIZE_M = (0.08, 0.08) # [L]
+m_m = 7.34767309e28
+MOON_IMG = "img/meme/hehecat.png"
 
 # —initial conditions—
 s0_s = v0(2) # [L]  sun position
 s0_e = Vector(s0_s.x() - 1, s0_s.y()) # [L]  initial position of earth
+s0_m = Vector(s0_e.x() - 0.5, s0_s.y()) # [L]  initial position of moon
 
 u_s = Vector(0, 29722 * T_SCALE / L_SCALE * 0.3) # [L][T]¯1  inital velocity of sun
 u_e = Vector(0, 29722 * T_SCALE / L_SCALE) # [L][T]¯1  inital velocity of earth
+u_m = Vector(-2000 * T_SCALE / L_SCALE, -10000 * T_SCALE / L_SCALE) # [L][T]¯1  inital velocity of moon
 
 
 # —pygame setup—

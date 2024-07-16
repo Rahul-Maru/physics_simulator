@@ -4,12 +4,13 @@ A program to simulate the n-body problem.
 """
 
 from itertools import combinations
+from random import randrange
 
 from src.objs.particle import Particle
 from src.utils.plot import plot
 from src.utils.text import text_engine
 from src.vars.consts import *
-from src.vars.colors import *
+from src.vars.colors import COLORS, D_GRAY, D_RED, GRAY
 from src.utils.vector import I, J
 
 done = False
@@ -20,7 +21,7 @@ zoom = 1
 t = 0 # IRL s
 
 particle_list = []
-
+barycolors = []
 
 def main() -> None:
 	"""Run the simulation."""
@@ -34,7 +35,13 @@ def main() -> None:
 
 	sun = Particle(m_s, 0, s0_s, u_s, SIZE_S, img_src=SUN_IMG, name="Sun")
 	earth = Particle(m_e, 0, s0_e, u_e, SIZE_E, img_src=EARTH_IMG, name="Earth")
-	particle_list = [sun, earth]
+	moon = Particle(m_m, 0, s0_m, u_m, SIZE_M, img_src=MOON_IMG, name="Moon")
+	particle_list = [sun, earth, moon]
+
+	# randomly assign colors to each body
+	for _ in range(len(particle_list)):
+		barycolors.append(COLORS[randrange(len(COLORS))])
+
 
 	leapfrog_setup(particle_list)
 
@@ -86,19 +93,26 @@ Llist = []
 
 def move(particle_list: list[Particle], dt, log) -> None:
 	"""Move all the bodies in the system over one timestep."""
-	ΣU = 0 # [M][L]²[T]¯²
-	ΣKE = 0 # [M][L]²[T]¯²
-	Σp = v0(2) # [M][L][T]¯¹
-	ΣL = v0(3) # [M][L]²[T]¯¹
-	if log: print(f"{t=:.2f}s ({t*T_SCALE/DAY:.0f} days)")
+
+	if log:
+		ΣU = 0 # [M][L]²[T]¯²
+		ΣKE = 0 # [M][L]²[T]¯²
+		Σp = v0(2) # [M][L][T]¯¹
+		ΣL = v0(3) # [M][L]²[T]¯¹
+
+		print(f"{t=:.2f}s ({t*T_SCALE/DAY:.0f} days)")
+
 	for p1, p2 in combinations(particle_list, 2):
 		# F(a→b) = -F(b→a) so we only need to calculate one force
 		F_net = FORCE(p1, p2)
 
-		if log:
-			p1.move(F_net, dt)
-			p2.move(-F_net, dt)
+		p1.move(F_net, dt)
+		p2.move(-F_net, dt)
 
+	if log:
+		for p in particle_list:
+			ΣKE += KE(p) # add the kinetic energies of the particles
+		for p1, p2 in combinations(particle_list, 2):
 			ΣU += PE(p1, p2)
 
 			# add momenta to the totals
@@ -111,16 +125,9 @@ def move(particle_list: list[Particle], dt, log) -> None:
 			print(f"{p2.name} ← {p1.name}")
 			print(f"{p2:.3f}")
 
-		else: 
-			p1.move(F_net, dt)
-			p2.move(-F_net, dt)
-
-	if log:
-		for p in particle_list:
-			ΣKE += KE(p) # add the kinetic energies of the particles
+		ΣE = ΣU + ΣKE*2
 		Ulist.append(ΣU)
 		KElist.append(ΣKE)
-		ΣE = ΣU + ΣKE
 		Elist.append(ΣE)
 		plist.append(Σp.mag())
 		Llist.append(ΣL.mag())
@@ -165,6 +172,8 @@ def handle_events(dt) -> None:
 				elif event.key == pg.K_0:
 					zoom = 1
 					text_engine.update_zoom(zoom)
+
+				last_key = None
 
 			else:
 				if event.key == pg.K_ESCAPE and last_key == pg.K_ESCAPE:
@@ -230,8 +239,9 @@ def draw(screen: pg.Surface, objs: list[Particle]) -> None:
 	if show_barycenter:
 		b = scale_coords(barycenter(particle_list), zoom, center)
 		pg.draw.circle(screen, D_RED, b, 4*zoom)
-		for p in particle_list:
-			pg.draw.line(screen, YELLOW, scale_coords(p.s, zoom, center), b, 1)
+
+		for i, p in enumerate(particle_list):
+			pg.draw.line(screen, barycolors[i], scale_coords(p.s, zoom, center), b, 1)
 
 	text_engine.draw(screen, t, paused)
 
