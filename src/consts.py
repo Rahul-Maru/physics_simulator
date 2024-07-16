@@ -61,7 +61,7 @@ EARTH_IMG = "img/earth.png"
 s0_s = v0(2) # [L]  sun position
 s0_e = Vector(s0_s.x() - 1, s0_s.y()) # [L]  initial position of earth
 
-u_s = v0(2) # [L][T]¯1  inital velocity of sun
+u_s = Vector(0, 29722 * T_SCALE / L_SCALE * 0.3) # [L][T]¯1  inital velocity of sun
 u_e = Vector(0, 29722 * T_SCALE / L_SCALE) # [L][T]¯1  inital velocity of earth
 
 

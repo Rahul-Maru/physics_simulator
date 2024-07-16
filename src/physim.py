@@ -52,7 +52,7 @@ def main() -> None:
 	pg.quit()
 
 	print(f"{Vector.c} vector objects created")
-	plot((tlist, "t/day"), (Ulist, "Energy"), (plist, "|Linear Momentum|"), (Llist, "|Angular momentum|"))
+	plot((tlist, "t/day"), (Ulist, "Potential Energy"), (KElist, "Kinetic Energy"), (Elist, "Energy"), (plist, "|Linear Momentum|"), (Llist, "|Angular momentum|"))
 
 
 def leapfrog_setup(particle_list: list[Particle]) -> None:
@@ -68,11 +68,14 @@ def leapfrog_setup(particle_list: list[Particle]) -> None:
 
 tlist = []
 Ulist = []
+KElist = []
+Elist = []
 plist = []
 Llist = []
 
 def move(particle_list: list[Particle], dt, log) -> None:
-	ΣU = 0 # [M][L]²[T]¯² FIXME energy seems to have the form of |sin(t)|
+	ΣU = 0 # [M][L]²[T]¯²
+	ΣKE = 0
 	Σp = v0(2) # [M][L][T]¯¹
 	ΣL = v0(3) # [M][L]²[T]¯¹
 	if log: print(f"{t=:.2f}s ({t*T_SCALE/DAY:.1f} days)")
@@ -83,8 +86,7 @@ def move(particle_list: list[Particle], dt, log) -> None:
 			p1.move(F_net, dt)
 			p2.move(-F_net, dt)
 
-			# sum up the potential energies of the pair
-			ΣU += PE(p1, p2)*2 # PE(a→b) = PE(b→a)
+			ΣU += PE(p1, p2)
 
 			# add momenta to the totals
 			Σp += p1.m*p1.v + p2.m*p2.v
@@ -102,13 +104,16 @@ def move(particle_list: list[Particle], dt, log) -> None:
 
 	if log:
 		for p in particle_list:
-			ΣU += KE(p) # add the kinetic energies of the particles
+			ΣKE += KE(p) # add the kinetic energies of the particles
 		Ulist.append(ΣU)
+		KElist.append(ΣKE)
+		ΣE = ΣU + ΣKE
+		Elist.append(ΣE)
 		plist.append(Σp.mag())
 		Llist.append(ΣL.mag())
 
-		print(f"ΣU: {ΣU:0.3E} || Σp: {Σp:0.3E} ({Σp.mag():.3E}) || ΣL: {ΣL.mag():.3E}\n")
-		text_engine.update_momenta(ΣU, Σp, ΣL)
+		print(f"ΣE: {ΣE:0.3E} || Σp: {Σp:0.3E} ({Σp.mag():.3E}) || ΣL: {ΣL.mag():.3E}\n")
+		text_engine.update_momenta(ΣE, Σp, ΣL)
 
 def barycenter(p_list: list[Particle]) -> Vector:
 	s = v0(2)

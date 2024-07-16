@@ -182,7 +182,6 @@ class Vector(Vectoid):
 	def __rtruediv__(self, k: Number) -> Number:
 		return k/self.mag()
 
-	# TODO define __floordiv__ and __ifloordiv__?
 	def __rfloordiv__(self, k: Number) -> Number:
 		return k//self.mag()
 
