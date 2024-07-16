@@ -150,10 +150,11 @@ def draw(screen: pg.Surface, objs: list[Particle]) -> None:
 			  (MID.x() - center.x()*RES*zoom, WINDOW_HEIGHT)) # y-axis
 
 
-	# render all objects
+	# draw all objects
 	for obj in objs:
 		obj.draw(screen, center, zoom)
 
+	# draw the barycenter 
 	if show_barycenter:
 		pg.draw.circle(screen, D_RED, (zoom*(RES_MAT@(barycenter(objs) - center)) + MID).tup(), 4*zoom)
 
