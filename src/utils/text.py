@@ -22,7 +22,7 @@ class TextEngine():
 		self.update_momenta(0, v0(2), v0(2))
 
 		self.pausetxt = self.font.render("PAUSED II", True, RED)
-		self.quittxt = self.font.render("QUITTING... (press Esc again)", True, WHITE)
+		self.quittxt = self.font.render("QUITTING. (press esc again)", True, WHITE)
 		self.FPSpos = (24, 20)
 
 		tutorialtxt = "\n Esc ×2 — quit\n Space — pause\n Arrows — scroll\n C — center at origin\n" + \

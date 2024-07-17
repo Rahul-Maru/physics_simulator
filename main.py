@@ -36,6 +36,8 @@ def main() -> None:
 	sun = Particle(m_s, 0, s0_s, u_s, SIZE_S, img_src=SUN_IMG, name="Sun")
 	earth = Particle(m_e, 0, s0_e, u_e, SIZE_E, img_src=EARTH_IMG, name="Earth")
 	moon = Particle(m_m, 0, s0_m, u_m, SIZE_M, img_src=MOON_IMG, name="Moon")
+	moon2 = Particle(m_m, 0, -s0_m, -u_m, SIZE_M, img_src=MOON_IMG, name="Moon1")
+	moon3 = Particle(m_m, 0, -s0_m, -s0_m, SIZE_M, img_src=MOON_IMG, name="Moon2")
 	particle_list = [sun, earth, moon]
 
 	# randomly assign colors to each body
@@ -96,43 +98,53 @@ def move(particle_list: list[Particle], dt, log) -> None:
 
 	if log:
 		ΣU = 0 # [M][L]²[T]¯²
+		uc = 0
 		ΣKE = 0 # [M][L]²[T]¯²
+		kc = 0
 		Σp = v0(2) # [M][L][T]¯¹
 		ΣL = v0(3) # [M][L]²[T]¯¹
 
 		print(f"{t=:.2f}s ({t*T_SCALE/DAY:.0f} days)")
-
+	c = 0
 	for p1, p2 in combinations(particle_list, 2):
 		# F(a→b) = -F(b→a) so we only need to calculate one force
 		F_net = FORCE(p1, p2)
 
 		p1.move(F_net, dt)
 		p2.move(-F_net, dt)
+		c+=1
 
 	if log:
+		print(c)
 		for p in particle_list:
-			ΣKE += KE(p) # add the kinetic energies of the particles
-		for p1, p2 in combinations(particle_list, 2):
-			ΣU += PE(p1, p2)
+			ke = KE(p)
+			ΣKE += ke # add the kinetic energies of the particles
+			kc += 1
 
 			# add momenta to the totals
-			Σp += p1.m*p1.v + p2.m*p2.v
-			ΣL += p1.m*(p1.v*p1.s) + p2.m*(p2.v*p2.s)
+			Σp += p.m*p.v
+			ΣL += p.m*(p.v*p.s) # p.v*p.s represents the cross product
 
-			print(f"{p1.name} ← {p2.name}")
-			print(f"{p1:.3f}")
+			print(f"{p:.3f} || KE: {ke:.3E}")
 
-			print(f"{p2.name} ← {p1.name}")
-			print(f"{p2:.3f}")
+		for p1, p2 in combinations(particle_list, 2):
+			u = PE(p1, p2)
+			ΣU += u
+			uc += 1
+			print(f"U ({p1.name} ⇔ {p2.name}): {u:.3E}", end=" || ")
+		print()
 
-		ΣE = ΣU + ΣKE*2
+		ΣE = ΣU + ΣKE
 		Ulist.append(ΣU)
 		KElist.append(ΣKE)
 		Elist.append(ΣE)
 		plist.append(Σp.mag())
 		Llist.append(ΣL.mag())
 
-		print(f"ΣE: {ΣE:0.3E} || Σp: {Σp:0.3E} ({Σp.mag():.3E}) || ΣL: {ΣL.mag():.3E}\n")
+		# BUG energy still not conserved
+		print(f"ΣE: {ΣE:0.3E} || Σp: {Σp:0.3E} ({Σp.mag():.3E}) || ΣL: {ΣL.mag():.3E}")
+		print("counts:", uc, kc)
+		print()
 		text_engine.update_momenta(ΣE, Σp, ΣL)
 
 
