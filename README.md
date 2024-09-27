@@ -10,11 +10,10 @@ Simulator that simulates the motions of the heavenly bodies (n-body problem) in 
 - pygame
 
 ———Installation———
-Download the repository, unzip it to a folder of your choice.
-To run the simulation, run main.py. You will see a window containing the simulation.
-When you close this window, a graph of various physical properties of the simulation
-will be generated. Some information is also outputted to the terminal, if you are interested.
-Instructions on how to use the simulation itself are displayed in the simulator window.
+Download the repository, unzip it to a folder of your choice. You can view a sample simulation in simulation.gif.
+To run the simulation again, run main.ipynb. After some time, the result will be saved in simulation.gif
+A graph of various physical properties of the simulation is also be generated at the bottom of the last code cell.
+All the initial conditions are defined in the first few code cells, and you are free to change them as you wish.
 
 ———CREDITS———
 
