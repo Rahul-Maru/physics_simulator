@@ -1,6 +1,6 @@
 Author: Rahul Maru
 Date: September 2024
-Version: 4.2M BETA
+Version: 4.2-M BETA
 Language: Python 3.10.12 - Jupyter
 
 Simulator that simulates the motions of the heavenly bodies (n-body problem) in python.
@@ -11,8 +11,8 @@ Simulator that simulates the motions of the heavenly bodies (n-body problem) in 
 
 ———Installation and Use———
 Download the repository as a zip file and unzip it to a folder of your choice, or use git clone.
-You can view a sample simulation in simulation.gif.
-To run the simulation again, run main.ipynb (NOT main.py). After some time, the result will be saved in simulation.gif.
+You can view sample simulations in the results folder.
+To run the simulation again, run main.ipynb (NOT main.py). After some time, the result will be saved in results/simulation.gif.
 A graph of various physical properties of the simulation is also be generated at the bottom of the last code cell.
 All the initial conditions are defined in the first few code cells, and you are free to change them as you wish.
 
