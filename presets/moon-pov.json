@@ -1,0 +1,9 @@
+
+{
+	"name": "moon-pov.json",
+	"t": 120,
+	"t_scale": 0.17,
+	"center": "earth",
+	"mode": "polar",
+	"aspect": "auto"
+}

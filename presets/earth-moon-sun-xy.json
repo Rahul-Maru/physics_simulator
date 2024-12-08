@@ -1,0 +1,9 @@
+{
+	"name": "earth-moon-sun-xy",
+	"t": 370,
+	"center": "barycenter",
+	"mode": "cartesian",
+	"dims": ["small", "small", ""],
+	"t_scale": 1,
+	"aspect": "auto"
+}

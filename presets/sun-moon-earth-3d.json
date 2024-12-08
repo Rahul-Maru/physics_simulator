@@ -1,0 +1,9 @@
+{
+	"name": "sun-moon-earth-3d",
+	"t": 370,
+	"t_scale": 1,
+	"center": "earth",
+	"mode": "cartesian",
+	"dims": ["small", "small", "large"],
+	"aspect": "box"
+}

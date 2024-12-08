@@ -1,0 +1,9 @@
+{
+	"name": "earth-moon-xy",
+	"t": 185,
+	"center": "earth",
+	"mode": "cartesian",
+	"dims": ["large", "large", ""],
+	"t_scale": 0.25,
+	"aspect": "box"
+}
